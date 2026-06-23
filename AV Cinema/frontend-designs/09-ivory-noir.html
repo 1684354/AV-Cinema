@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AV Cinema — Ivory Noir</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f8f6f0;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fcfaf6;
+  --bg-input: #ffffff;
+  --border: #e4e0d8;
+  --border-active: #ccc4ba;
+  --text-primary: #1a1814;
+  --text-secondary: #7a7268;
+  --text-tertiary: #b0a89e;
+  --violet: #7a4ac8;
+  --violet-dim: #5a30a0;
+  --violet-glow: rgba(122, 74, 200, 0.06);
+  --crimson: #c03050;
+  --crimson-glow: rgba(192, 48, 80, 0.04);
+  --shadow-sm: 0 1px 3px rgba(26, 24, 20, 0.04);
+  --shadow-md: 0 4px 14px rgba(26, 24, 20, 0.06);
+  --shadow-lg: 0 8px 30px rgba(26, 24, 20, 0.08);
+  --radius: 0px;
+}
+
+body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  letter-spacing: 0.2px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(122, 74, 200, 0.01) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { display: flex; height: 100vh; position: relative; z-index: 1; }
+
+/* Sidebar */
+.sidebar {
+  width: 200px; min-width: 200px;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+
+.logo-area {
+  padding: 32px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-size: 18px; font-weight: 600;
+  color: var(--violet);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.logo-sub {
+  font-size: 8px; color: var(--text-tertiary);
+  margin-top: 6px;
+  letter-spacing: 3px; text-transform: uppercase;
+}
+
+.nav-section { padding: 12px 0; }
+.nav-title {
+  padding: 0 20px 6px;
+  font-size: 8px; font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 3px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 20px;
+  cursor: pointer; font-size: 11px; font-weight: 400;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.nav-item:hover { color: var(--text-primary); }
+.nav-item.active { color: var(--violet); font-weight: 500; }
+
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 2px; bottom: 2px;
+  width: 2px;
+  background: var(--violet);
+}
+
+.nav-item .badge {
+  margin-left: auto;
+  font-size: 9px; color: var(--text-tertiary);
+  letter-spacing: 0;
+}
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-surface);
+}
+
+.search-box {
+  flex: 1; max-width: 320px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 7px 16px;
+  display: flex; align-items: center; gap: 10px;
+  transition: all 0.15s;
+}
+
+.search-box:focus-within { border-color: var(--violet); }
+
+.search-box input {
+  flex: 1; border: none; background: transparent;
+  color: var(--text-primary); font-size: 11px;
+  outline: none; letter-spacing: 0.5px;
+}
+
+.search-box input::placeholder { color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1.5px; font-size: 10px; }
+.search-box .icon-s { color: var(--text-tertiary); font-size: 12px; }
+
+.topbar-actions { display: flex; gap: 6px; }
+
+.btn {
+  padding: 5px 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 10px; cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn:hover { border-color: var(--violet); color: var(--violet); }
+.btn-primary { background: var(--violet); color: #fff; border-color: var(--violet); font-weight: 500; }
+.btn-primary:hover { background: var(--violet-dim); }
+
+.content {
+  flex: 1; overflow-y: auto; padding: 28px;
+}
+
+.content::-webkit-scrollbar { width: 2px; }
+.content::-webkit-scrollbar-thumb { background: var(--border-active); }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 20px;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.stat-card:hover {
+  border-color: var(--violet);
+  background: var(--bg-card-hover);
+}
+
+.stat-value {
+  font-size: 24px; font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.stat-label { font-size: 9px; color: var(--text-tertiary); margin-top: 3px; letter-spacing: 2px; text-transform: uppercase; }
+
+/* Sort */
+.sort-bar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 20px; padding: 8px 16px;
+  border: 1px solid var(--border);
+}
+
+.sort-label { font-size: 9px; color: var(--text-tertiary); letter-spacing: 2px; text-transform: uppercase; }
+
+.sort-select {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text-primary); padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer; outline: none;
+  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Movie Grid */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.movie-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.movie-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--violet), transparent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.movie-card:hover::after { opacity: 0.4; }
+
+.movie-card:hover {
+  border-color: var(--violet);
+  transform: translateY(-2px);
+}
+
+.card-thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #f0ede8 0%, #f5f2ec 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.thumb-ph {
+  font-size: 14px; font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 3px;
+  mix-blend-mode: difference;
+  opacity: 0.5;
+}
+
+.card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.4) 100%);
+  opacity: 0; transition: opacity 0.2s;
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
+}
+
+.movie-card:hover .card-overlay { opacity: 1; }
+
+.cat-badge {
+  font-size: 7px; padding: 2px 8px;
+  border: 1px solid;
+  text-transform: uppercase; letter-spacing: 2px;
+  width: fit-content;
+}
+
+.card-info { padding: 16px; }
+
+.card-title {
+  font-size: 12px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.card-meta {
+  font-size: 10px; color: var(--text-tertiary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.meta-ph { color: var(--violet); font-weight: 500; letter-spacing: 0.5px; }
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+
+.tag-item {
+  font-size: 8px; padding: 1px 6px;
+  border: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.loading-more {
+  text-align: center; padding: 32px;
+  color: var(--text-tertiary); font-size: 9px;
+  letter-spacing: 4px; text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .movie-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo">AV Cinema</div>
+      <div class="logo-sub">Private Archive</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">Browse</div>
+      <a class="nav-item active">All <span class="badge">641</span></a>
+      <a class="nav-item">AV <span class="badge">434</span></a>
+      <a class="nav-item">Anime <span class="badge">93</span></a>
+      <a class="nav-item">Western <span class="badge">113</span></a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">Discover</div>
+      <a class="nav-item">Actresses</a>
+      <a class="nav-item">Favorites</a>
+      <a class="nav-item">Tags</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">System</div>
+      <a class="nav-item">Add Movie</a>
+      <a class="nav-item">Settings</a>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search-box">
+        <span class="icon-s">⌕</span>
+        <input placeholder="SEARCH...">
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary">+ ADD</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">641</div><div class="stat-label">TOTAL</div></div>
+        <div class="stat-card"><div class="stat-value">434</div><div class="stat-label">AV</div></div>
+        <div class="stat-card"><div class="stat-value">2,260</div><div class="stat-label">ACTRESSES</div></div>
+        <div class="stat-card"><div class="stat-value">201</div><div class="stat-label">FAV</div></div>
+      </div>
+      <div class="sort-bar">
+        <span class="sort-label">SORT</span>
+        <select class="sort-select"><option>Date Added</option><option>Release</option><option>Title</option></select>
+        <button class="btn">DESC</button>
+        <button class="btn">RANDOM</button>
+        <button class="btn" style="margin-left:auto">TRANSLATE</button>
+      </div>
+      <div class="movie-grid">
+        <div class="movie-card">
+          <div class="card-thumb">
+            <span class="thumb-ph">CEMD-561</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#7a4ac8;border-color:#7a4ac8">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">わたしは会社の『性欲処理担当』秘書</div>
+            <div class="card-meta"><span class="meta-ph">CEMD-561</span> · 山瀬美紀</div>
+            <div class="card-tags">
+              <span class="tag-item" style="color:#c03050;border-color:#c03050">熟女</span>
+              <span class="tag-item" style="color:#7a4ac8;border-color:#7a4ac8">制服</span>
+            </div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">AVOP-123</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#7a4ac8;border-color:#7a4ac8">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">新人 〇〇 専属デビュー</div>
+            <div class="card-meta"><span class="meta-ph">AVOP-123</span> · 三上悠亜</div>
+            <div class="card-tags"><span class="tag-item" style="color:#7a4ac8;border-color:#7a4ac8">高清</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">XXX-001</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c03050;border-color:#c03050">WEST</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">Big Tits at Work 18</div>
+            <div class="card-meta"><span class="meta-ph">XXX-001</span> · Riley Reid</div>
+            <div class="card-tags"><span class="tag-item" style="color:#c03050;border-color:#c03050">巨乳</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">SCO-001</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c03050;border-color:#c03050">ANIME</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">催眠で女体化した俺</div>
+            <div class="card-meta"><span class="meta-ph">SCO-001</span></div>
+            <div class="card-tags"><span class="tag-item" style="color:#7a4ac8;border-color:#7a4ac8">催眠</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">ABW-456</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#7a4ac8;border-color:#7a4ac8">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">彼女の姉ちゃんは誘惑ヤリ魔</div>
+            <div class="card-meta"><span class="meta-ph">ABW-456</span> · 橋本ありな</div>
+            <div class="card-tags"><span class="tag-item" style="color:#c03050;border-color:#c03050">长腿</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">STAR-789</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#7a4ac8;border-color:#7a4ac8">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">密着ドキュメント 二十四時間</div>
+            <div class="card-meta"><span class="meta-ph">STAR-789</span> · 明日花キララ</div>
+            <div class="card-tags"><span class="tag-item" style="color:#7a4ac8;border-color:#7a4ac8">独占</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="loading-more">641 TITLES · ARCHIVED</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

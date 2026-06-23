@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AV Cinema — Warm Honey</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #faf6ee;
+  --bg-surface: #f5f0e6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fdfaf4;
+  --bg-input: #ffffff;
+  --border: #e8e0d2;
+  --border-warm: #dccfc0;
+  --text-primary: #2d241a;
+  --text-secondary: #8a7a66;
+  --text-tertiary: #c0b2a0;
+  --honey: #c8943a;
+  --honey-light: #e0b060;
+  --honey-dim: #a07828;
+  --honey-glow: rgba(200, 148, 58, 0.06);
+  --terra: #c06050;
+  --terra-glow: rgba(192, 96, 80, 0.04);
+  --shadow-sm: 0 1px 4px rgba(45, 36, 26, 0.04);
+  --shadow-md: 0 4px 16px rgba(45, 36, 26, 0.06);
+  --shadow-lg: 0 8px 32px rgba(45, 36, 26, 0.08);
+  --radius: 6px;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% -10%, rgba(200, 148, 58, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { display: flex; height: 100vh; position: relative; z-index: 1; }
+
+/* Sidebar */
+.sidebar {
+  width: 200px; min-width: 200px;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+
+.logo-area {
+  padding: 32px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-size: 20px; font-weight: 700;
+  color: var(--honey);
+  letter-spacing: -0.5px;
+}
+
+.logo-sub {
+  font-size: 9px; color: var(--text-tertiary);
+  margin-top: 4px; letter-spacing: 3px; text-transform: uppercase;
+}
+
+.logo-decor {
+  width: 28px; height: 2px;
+  background: var(--honey);
+  margin-top: 6px; opacity: 0.4;
+}
+
+.nav-section { padding: 12px 0; }
+.nav-title {
+  padding: 0 20px 6px;
+  font-size: 9px; font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 2.5px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 20px;
+  cursor: pointer; font-size: 12px; font-weight: 400;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.nav-item:hover { color: var(--text-primary); background: var(--honey-glow); }
+.nav-item.active { color: var(--honey); font-weight: 500; }
+
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 2px; bottom: 2px;
+  width: 2px;
+  background: var(--honey);
+}
+
+.nav-item .badge {
+  margin-left: auto;
+  font-size: 10px; color: var(--text-tertiary);
+}
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-surface);
+}
+
+.search-box {
+  flex: 1; max-width: 320px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 16px;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-box:focus-within {
+  border-color: var(--honey);
+  box-shadow: 0 0 0 3px var(--honey-glow);
+}
+
+.search-box input {
+  flex: 1; border: none; background: transparent;
+  color: var(--text-primary); font-size: 12px; outline: none;
+}
+
+.search-box input::placeholder { color: var(--text-tertiary); }
+.search-box .icon-s { color: var(--text-tertiary); }
+
+.topbar-actions { display: flex; gap: 6px; }
+
+.btn {
+  padding: 6px 16px; border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px; cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover { border-color: var(--honey); color: var(--honey); }
+.btn-primary { background: var(--honey); color: #fff; border-color: var(--honey); font-weight: 600; }
+.btn-primary:hover { background: var(--honey-light); }
+
+.content {
+  flex: 1; overflow-y: auto; padding: 24px;
+}
+
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border-warm); border-radius: 2px; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: all 0.25s;
+  cursor: default;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+  border-color: var(--honey);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(200, 148, 58, 0.05);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-size: 26px; font-weight: 700;
+  color: var(--honey);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.stat-label { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* Sort */
+.sort-bar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 20px; padding: 10px 16px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.sort-label { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px; }
+
+.sort-select {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text-primary); padding: 4px 10px;
+  border-radius: 4px; font-size: 11px;
+  cursor: pointer; outline: none;
+}
+
+/* Movie Grid */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.movie-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.movie-card:hover {
+  border-color: var(--honey);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(200, 148, 58, 0.05);
+  transform: translateY(-3px);
+}
+
+.card-thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #f0eade 0%, #f5f0e6 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.thumb-ph {
+  font-size: 14px; font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 1px;
+}
+
+.card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.3) 100%);
+  opacity: 0; transition: opacity 0.3s;
+  display: flex; padding: 10px;
+}
+
+.movie-card:hover .card-overlay { opacity: 1; }
+
+.cat-badge {
+  font-size: 8px; padding: 2px 10px; border-radius: 3px;
+  border: 1px solid;
+  text-transform: uppercase; letter-spacing: 1px;
+  background: rgba(255,255,255,0.6);
+  height: fit-content;
+}
+
+.card-info { padding: 14px; }
+
+.card-title {
+  font-size: 12px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 4px;
+}
+
+.card-meta {
+  font-size: 10px; color: var(--text-tertiary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.meta-ph { color: var(--terra); font-weight: 500; }
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.tag-item {
+  font-size: 9px; padding: 1px 7px; border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.loading-more {
+  text-align: center; padding: 28px;
+  color: var(--text-tertiary); font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .movie-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo">AV Cinema</div>
+      <div class="logo-decor"></div>
+      <div class="logo-sub">Private Collection</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">Browse</div>
+      <a class="nav-item active">All <span class="badge">641</span></a>
+      <a class="nav-item">AV <span class="badge">434</span></a>
+      <a class="nav-item">Anime <span class="badge">93</span></a>
+      <a class="nav-item">Western <span class="badge">113</span></a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">Discover</div>
+      <a class="nav-item">Actresses</a>
+      <a class="nav-item">Favorites</a>
+      <a class="nav-item">Tags</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">Manage</div>
+      <a class="nav-item">Add Movie</a>
+      <a class="nav-item">Settings</a>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search-box">
+        <span class="icon-s">⌕</span>
+        <input placeholder="Search ID / title / actress...">
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary">+ Add</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">641</div><div class="stat-label">Total Films</div></div>
+        <div class="stat-card"><div class="stat-value">434</div><div class="stat-label">AV</div></div>
+        <div class="stat-card"><div class="stat-value">2,260</div><div class="stat-label">Actresses</div></div>
+        <div class="stat-card"><div class="stat-value">201</div><div class="stat-label">Favorites</div></div>
+      </div>
+      <div class="sort-bar">
+        <span class="sort-label">Sort</span>
+        <select class="sort-select"><option>Date Added</option><option>Release</option><option>Title</option></select>
+        <button class="btn">Desc</button>
+        <button class="btn">Random</button>
+        <button class="btn" style="margin-left:auto">Translate</button>
+      </div>
+      <div class="movie-grid">
+        <div class="movie-card">
+          <div class="card-thumb">
+            <span class="thumb-ph">CEMD-561</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c8943a;border-color:#c8943a">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">わたしは会社の『性欲処理担当』秘書</div>
+            <div class="card-meta"><span class="meta-ph">CEMD-561</span> · 山瀬美紀</div>
+            <div class="card-tags">
+              <span class="tag-item">熟女</span>
+              <span class="tag-item">制服</span>
+            </div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">AVOP-123</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c8943a;border-color:#c8943a">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">新人 〇〇 専属デビュー</div>
+            <div class="card-meta"><span class="meta-ph">AVOP-123</span> · 三上悠亜</div>
+            <div class="card-tags"><span class="tag-item">高清</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">XXX-001</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#7a8ab0;border-color:#7a8ab0">Western</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">Big Tits at Work 18</div>
+            <div class="card-meta"><span class="meta-ph">XXX-001</span> · Riley Reid</div>
+            <div class="card-tags"><span class="tag-item">巨乳</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">SCO-001</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#90a87a;border-color:#90a87a">Anime</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">催眠で女体化した俺</div>
+            <div class="card-meta"><span class="meta-ph">SCO-001</span></div>
+            <div class="card-tags"><span class="tag-item">催眠</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">ABW-456</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c8943a;border-color:#c8943a">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">彼女の姉ちゃんは誘惑ヤリ魔</div>
+            <div class="card-meta"><span class="meta-ph">ABW-456</span> · 橋本ありな</div>
+            <div class="card-tags"><span class="tag-item">长腿</span></div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="card-thumb"><span class="thumb-ph">STAR-789</span>
+            <div class="card-overlay"><span class="cat-badge" style="color:#c8943a;border-color:#c8943a">AV</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-title">密着ドキュメント 二十四時間</div>
+            <div class="card-meta"><span class="meta-ph">STAR-789</span> · 明日花キララ</div>
+            <div class="card-tags"><span class="tag-item">独占</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="loading-more">641 films · curated</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
