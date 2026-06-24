@@ -1,4 +1,4 @@
-import { getDb } from './index'
+import { getDb, persistDb } from './index'
 
 // Query all rows as objects
 export function q(sql: string, params?: any): any[] {
@@ -42,11 +42,12 @@ export function qVal(sql: string, params?: any): any {
   }
 }
 
-// Run a write query
+// Run a write query (auto-persists)
 export function qRun(sql: string, params?: any): any {
   const db = getDb()
   try {
     db.run(sql, params)
+    persistDb()
     return { changes: db.getRowsModified() }
   } catch (err) {
     console.error('sql.js run error:', err)

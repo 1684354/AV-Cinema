@@ -31,7 +31,12 @@ export function registerWebsiteIpc(): void {
   })
 
   ipcMain.handle('openWebsite', (_event, url: string) => {
-    if (url) shell.openExternal(url)
-    return { success: true }
+    if (!url) return { success: false, error: 'No URL provided' }
+    try {
+      shell.openExternal(url)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    }
   })
 }

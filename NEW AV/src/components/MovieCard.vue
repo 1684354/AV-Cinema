@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ACTRESS_TAG_KEYWORDS } from '@/utils/tags'
 
 const props = defineProps<{ movie: any }>()
 const emit = defineEmits<{
@@ -51,10 +52,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
-const actressKeywords = [
-  '巨乳', '美乳', '贫乳', '美腿', '丰满', '单体', '引退', '新人',
-  '美脚', '爆乳', '微乳', '美臀', '细腰', '长腿'
-]
+const actressKeywords = ACTRESS_TAG_KEYWORDS
 
 // Context menu state
 const ctxVisible = ref(false)
@@ -106,12 +104,16 @@ async function toggleFav() {
 
 function play() {
   ctxVisible.value = false
-  window.api.playMovie(props.movie.id)
+  if (props.movie.video_path) {
+    window.api.playMovie(props.movie.video_path)
+  }
 }
 
 function openLocation() {
   ctxVisible.value = false
-  window.api.openFileLocation(props.movie.file_path)
+  if (props.movie.video_path) {
+    window.api.openFileLocation(props.movie.video_path)
+  }
 }
 
 function confirmDelete() {

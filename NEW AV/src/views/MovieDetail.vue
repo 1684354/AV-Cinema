@@ -172,6 +172,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ACTRESS_TAG_KEYWORDS } from '@/utils/tags'
 
 const route = useRoute()
 const router = useRouter()
@@ -193,10 +194,7 @@ const editForm = ref({
 })
 
 // Actress keywords for tag classification (must match MovieCard.vue)
-const actressKeywords = [
-  '巨乳', '美乳', '贫乳', '美腿', '丰满', '单体', '引退', '新人',
-  '美脚', '爆乳', '微乳', '美臀', '细腰', '长腿'
-]
+const actressKeywords = ACTRESS_TAG_KEYWORDS
 
 // Computed
 const actressNames = computed<any[]>(() => {
@@ -370,14 +368,14 @@ async function toggleEdit() {
 }
 
 function play() {
-  if (movie.value?.file_path) {
-    window.api.playMovie(movie.value.file_path)
+  if (movie.value?.video_path) {
+    window.api.playMovie(movie.value.video_path)
   }
 }
 
 function openLocation() {
-  if (movie.value?.file_path) {
-    window.api.openFileLocation(movie.value.file_path)
+  if (movie.value?.video_path) {
+    window.api.openFileLocation(movie.value.video_path)
   }
 }
 

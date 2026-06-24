@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS movies (
   has_subtitle  INTEGER DEFAULT 0,
   is_uncensored INTEGER DEFAULT 0,
   has_chinese   INTEGER DEFAULT 0,
+  is_favorite   INTEGER DEFAULT 0,
   play_count    INTEGER DEFAULT 0,
   cover_path    TEXT DEFAULT '',
   screenshot_paths TEXT DEFAULT '[]',
