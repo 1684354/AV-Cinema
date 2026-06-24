@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-electron/
+release/
+*.db
+*.db-backup
+*.dll
+*.dll.backup
+.DS_Store
+thumbs.db
