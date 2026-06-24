@@ -1,6 +1,12 @@
 import { app, BrowserWindow, shell } from 'electron'
 import path from 'path'
 import { initDatabase, closeDatabase } from './database/index'
+import { registerMovieIpc } from './ipc/movieIpc'
+import { registerActressIpc } from './ipc/actressIpc'
+import { registerTagIpc } from './ipc/tagIpc'
+import { registerWebsiteIpc } from './ipc/websiteIpc'
+import { registerSettingsIpc } from './ipc/settingsIpc'
+import { registerSearchIpc } from './ipc/searchIpc'
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -44,6 +50,14 @@ app.whenReady().then(async () => {
   } catch (err) {
     console.warn('[Main] Legacy migration skipped or failed:', (err as Error).message)
   }
+
+  // Register IPC handlers
+  registerMovieIpc()
+  registerActressIpc()
+  registerTagIpc()
+  registerWebsiteIpc()
+  registerSettingsIpc()
+  registerSearchIpc()
 
   createWindow()
   app.on('activate', () => {
