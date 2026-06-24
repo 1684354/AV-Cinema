@@ -36,6 +36,15 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   await initDatabase()
+
+  // Run legacy data migration (non-blocking for UI)
+  try {
+    const { runLegacyMigration } = await import('./database/migrations/001_import_legacy')
+    await runLegacyMigration()
+  } catch (err) {
+    console.warn('[Main] Legacy migration skipped or failed:', (err as Error).message)
+  }
+
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
