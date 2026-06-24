@@ -8,8 +8,9 @@ export function registerActressIpc(): void {
     const queryParams: any[] = []
 
     if (params.category && params.category !== 'all') {
+      const normalized = params.category.charAt(0).toUpperCase() + params.category.slice(1).toLowerCase()
       conditions.push('category = ?')
-      queryParams.push(params.category)
+      queryParams.push(normalized)
     }
     if (params.search) {
       conditions.push('(name LIKE ? OR name_cn LIKE ?)')

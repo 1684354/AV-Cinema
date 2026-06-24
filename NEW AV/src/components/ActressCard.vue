@@ -1,6 +1,9 @@
 <template>
   <div class="acard" @click="goDetail">
-    <div class="avatar">🎭</div>
+    <div class="avatar">
+      <img v-if="actress.avatar_path" :src="'file:///' + actress.avatar_path.replace(/\\/g, '/')" class="avatar-img" @error="avatarError = true" />
+      <span v-if="!actress.avatar_path || avatarError" class="avatar-fallback">🎭</span>
+    </div>
     <div class="aname">{{ actress.name || '未知' }}</div>
     <div class="asub">
       <span v-if="actress.cup">{{ actress.cup }}罩杯</span>
@@ -11,10 +14,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{ actress: any }>()
 const router = useRouter()
+const avatarError = ref(false)
 
 function goDetail() {
   router.push(`/actress/${props.actress.id}`)
@@ -48,10 +53,13 @@ function goDetail() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
   margin-bottom: 6px;
   flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
 }
+.avatar .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.avatar .avatar-fallback { font-size: 32px; }
 
 .aname {
   font-size: 14px;

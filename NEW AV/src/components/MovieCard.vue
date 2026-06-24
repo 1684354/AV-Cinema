@@ -10,7 +10,8 @@
       <span class="fav" :class="{ active: movie.is_favorite }" @click.stop="toggleFav">
         {{ movie.is_favorite ? '♥' : '♡' }}
       </span>
-      <div class="thumb-placeholder">🎬</div>
+      <img v-if="movie.cover_path" :src="'file:///' + movie.cover_path.replace(/\\/g, '/')" class="cover-img" @error="onCoverError" />
+      <div v-else class="thumb-placeholder">🎬</div>
     </div>
     <div class="body">
       <div class="code">{{ movie.code || '未知' }}</div>
@@ -51,6 +52,9 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const coverError = ref(false)
+
+function onCoverError() { coverError.value = true }
 
 const actressKeywords = ACTRESS_TAG_KEYWORDS
 
@@ -162,6 +166,7 @@ onUnmounted(() => {
 .thumb .fav { position: absolute; top: 8px; right: 8px; font-size: 16px; color: rgba(255,255,255,.5); transition: var(--transition); z-index: 2; }
 .thumb .fav:hover { color: var(--accent2); }
 .thumb .fav.active { color: var(--accent2); }
+.thumb .cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .body { padding: 12px 14px 14px; }
 .code { font-size: 11px; color: var(--accent2); font-weight: 700; letter-spacing: .5px; }

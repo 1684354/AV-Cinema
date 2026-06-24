@@ -1,23 +1,23 @@
-/* ===== CSS 变量主题（暗房影集） ===== */
+/* ===== CSS 变量主题（暖色奶油风） ===== */
 :root {
-  --bg: #1a1513;
-  --bg2: #1f1a17;
-  --bg3: #0f0c0b;
-  --surface: #25201d;
-  --border: #2a2320;
-  --fg: #f0ebe7;
-  --fg2: #cfa899;
-  --fg3: #8a7a72;
-  --fg4: #5a4d45;
+  --bg: #f5f0eb;
+  --bg2: #fcf9f6;
+  --bg3: #efe8e0;
+  --surface: #fffcf9;
+  --border: #e0d5cc;
+  --fg: #3b2f2a;
+  --fg2: #6b5b53;
+  --fg3: #9a8a82;
+  --fg4: #bfb2a8;
   --accent: #a24a3a;
   --accent2: #d98e6a;
   --accent3: #c96a4a;
-  --rose: #e88a7a;
-  --blue: #7ab8e8;
+  --rose: #e3705a;
+  --blue: #5a9bc8;
   --radius: 16px;
   --radius-sm: 10px;
   --radius-xs: 8px;
-  --shadow: 0 4px 16px rgba(0,0,0,.3);
+  --shadow: 0 4px 16px rgba(59,47,42,.1);
   --transition: all .25s cubic-bezier(.4,0,.2,t);
 }
 

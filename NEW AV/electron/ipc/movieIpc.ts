@@ -8,8 +8,10 @@ export function registerMovieIpc(): void {
     const queryParams: any[] = []
 
     if (params.category && params.category !== 'all') {
+      // Normalize category: accept lower case from router
+      const normalized = params.category.charAt(0).toUpperCase() + params.category.slice(1).toLowerCase()
       conditions.push('category = ?')
-      queryParams.push(params.category)
+      queryParams.push(normalized)
     }
     if (params.search) {
       conditions.push('(title LIKE ? OR code LIKE ? OR actresses LIKE ?)')
