@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import { fileURLToPath } from 'url'
 import initSqlJs from 'sql.js'
 
 import {
@@ -14,8 +15,13 @@ import {
   CREATE_MIGRATION_LOG_TABLE
 } from './schema'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Locate sql.js WASM — dist-electron/ dir at runtime, so ../node_modules/ points to project root
+const PROJECT_ROOT = path.resolve(__dirname, '..')
 const SQL_Promise = initSqlJs({
-  locateFile: (file: string) => path.join(__dirname, '../../node_modules/sql.js/dist/', file)
+  locateFile: (file: string) => path.join(PROJECT_ROOT, 'node_modules/sql.js/dist/', file)
 })
 
 let SQL: any = null

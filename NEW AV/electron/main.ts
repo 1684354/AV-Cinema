@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { initDatabase, closeDatabase } from './database/index'
 import { registerMovieIpc } from './ipc/movieIpc'
 import { registerActressIpc } from './ipc/actressIpc'
@@ -7,6 +8,9 @@ import { registerTagIpc } from './ipc/tagIpc'
 import { registerWebsiteIpc } from './ipc/websiteIpc'
 import { registerSettingsIpc } from './ipc/settingsIpc'
 import { registerSearchIpc } from './ipc/searchIpc'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
