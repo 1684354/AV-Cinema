@@ -10,7 +10,7 @@
       </div>
       <div class="view-container">
         <router-view v-slot="{ Component }">
-          <keep-alive include="MovieList">
+          <keep-alive include="MovieList,ActressList">
             <component :is="Component" />
           </keep-alive>
         </router-view>
