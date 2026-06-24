@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AV Cinema · 暗房影集 完整设计</title>
+<style>
+/* ===== 全局 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1513; --bg2:#1f1a17; --bg3:#0f0c0b;
+  --surface:#25201d; --border:#2a2320;
+  --fg:#f0ebe7; --fg2:#cfa899; --fg3:#8a7a72; --fg4:#5a4d45;
+  --accent:#a24a3a; --accent2:#d98e6a; --accent3:#c96a4a;
+  --rose: #e88a7a; --blue: #7ab8e8;
+  --radius:16px; --radius-sm:10px; --radius-xs:8px;
+  --shadow: 0 4px 16px rgba(0,0,0,.3);
+  --transition: all .25s cubic-bezier(.4,0,.2,1);
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--fg4)}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+
+/* ===== 布局 ===== */
+.app{display:flex;height:100vh}
+
+/* ===== 侧边栏 ===== */
+.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 12px;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar .logo{font-family:Georgia,serif;font-size:22px;color:var(--accent2);padding:8px 12px;margin-bottom:20px;letter-spacing:2px;display:flex;align-items:center;gap:8px}
+.sidebar .logo span{color:var(--fg);font-size:20px}
+.sidebar .grp{font-size:10px;color:var(--fg4);padding:8px 12px 4px;text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+.sidebar .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);color:var(--fg3);font-size:13px;transition:var(--transition);margin-bottom:1px;position:relative}
+.sidebar .nav-item:hover{background:var(--surface);color:var(--fg)}
+.sidebar .nav-item.active{background:var(--accent);color:#fff}
+.sidebar .nav-item .ico{font-size:14px;width:20px;text-align:center}
+.sidebar .nav-item .badge{margin-left:auto;font-size:10px;background:var(--surface);padding:2px 8px;border-radius:10px;color:var(--fg3)}
+.sidebar .nav-item.active .badge{background:rgba(255,255,255,.2);color:#fff}
+.sidebar .sep{margin:8px 0;border-top:1px solid var(--border)}
+
+/* ===== 主内容 ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ===== 顶栏 ===== */
+.topbar{display:flex;align-items:center;padding:14px 28px;background:var(--bg);border-bottom:1px solid var(--border);gap:16px;flex-shrink:0}
+.topbar .search-wrap{flex:1;position:relative}
+.topbar .search-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:9px 20px 9px 40px;font-size:13px;color:var(--fg);outline:none;transition:var(--transition)}
+.topbar .search-wrap input::placeholder{color:var(--fg4)}
+.topbar .search-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(162,74,58,.15)}
+.topbar .search-wrap .search-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--fg4)}
+.topbar .actions{display:flex;gap:10px}
+.topbar .actions button{padding:7px 16px;border-radius:16px;border:1px solid var(--border);background:var(--bg2);color:var(--fg3);font-size:12px;transition:var(--transition)}
+.topbar .actions button:hover{background:var(--surface);color:var(--fg)}
+
+/* ===== 视图容器 ===== */
+.view{flex:1;overflow-y:auto;padding:24px 28px}
+.view.hidden{display:none}
+
+/* ===== 排序/筛选栏 ===== */
+.sort-bar{display:flex;align-items:center;gap:8px;padding:12px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0;background:var(--bg)}
+.sort-bar .opt{padding:5px 14px;border-radius:14px;font-size:12px;color:var(--fg3);cursor:pointer;transition:var(--transition)}
+.sort-bar .opt:hover{color:var(--fg)}
+.sort-bar .opt.active{background:var(--accent);color:#fff}
+.sort-bar .spacer{flex:1}
+.sort-bar .filter-group{display:flex;gap:6px}
+.sort-bar .filter-group .tag{padding:4px 12px;border-radius:12px;border:1px solid var(--border);font-size:11px;color:var(--fg3);cursor:pointer;transition:var(--transition)}
+.sort-bar .filter-group .tag:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sort-bar .filter-group .tag.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.view-count{font-size:12px;color:var(--fg4)}
+
+/* ===== 影片卡片网格 ===== */
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding-bottom:40px}
+.grid .card{background:var(--bg2);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);transition:var(--transition);cursor:pointer;position:relative}
+.grid .card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.4),0 0 0 1px rgba(162,74,58,.25)}
+.grid .card .thumb{aspect-ratio:3/4;background:linear-gradient(135deg,var(--surface),var(--border));display:flex;align-items:center;justify-content:center;font-size:32px;position:relative}
+.grid .card .thumb .flags{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap}
+.grid .card .thumb .flags span{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600;background:rgba(0,0,0,.7);color:var(--fg)}
+.grid .card .thumb .flags .accent{background:var(--accent);color:#fff}
+.grid .card .thumb .fav{position:absolute;top:8px;right:8px;font-size:16px;color:rgba(255,255,255,.5);transition:var(--transition)}
+.grid .card .thumb .fav:hover{color:var(--accent2)}
+.grid .card .thumb .fav.active{color:var(--accent2)}
+.grid .card .body{padding:12px 14px 14px}
+.grid .card .body .code{font-size:11px;color:var(--accent2);font-weight:700;letter-spacing:.5px}
+.grid .card .body .title{font-size:13px;margin-top:4px;color:var(--fg);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.grid .card .body .meta{font-size:11px;color:var(--fg3);margin-top:6px;display:flex;gap:6px}
+.grid .card .body .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.grid .card .body .tags span{font-size:9px;padding:2px 7px;border-radius:5px}
+.grid .card .body .tags .r{background:rgba(162,74,58,.2);color:var(--rose)}
+.grid .card .body .tags .b{background:rgba(59,100,140,.2);color:var(--blue)}
+
+/* ===== 右键菜单 ===== */
+.ctx{position:fixed;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px;box-shadow:var(--shadow);z-index:100;min-width:160px;display:none}
+.ctx .ctx-item{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:6px;font-size:13px;color:var(--fg3);transition:var(--transition)}
+.ctx .ctx-item:hover{background:var(--surface);color:var(--fg)}
+.ctx .ctx-item.danger:hover{background:rgba(162,74,58,.2);color:var(--rose)}
+
+/* ===== 详情页专用 ===== */
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-shrink:0}
+.detail-header .back{font-size:16px;color:var(--fg3);cursor:pointer;padding:6px;border-radius:50%;transition:var(--transition)}
+.detail-header .back:hover{background:var(--surface);color:var(--fg)}
+.detail-header .loc{font-size:13px;color:var(--fg4)}
+.detail-header .actions{margin-left:auto;display:flex;gap:10px}
+.detail-header .actions button{padding:8px 20px;border-radius:20px;border:1px solid var(--border);font-size:12px;background:var(--bg2);color:var(--fg3);transition:var(--transition)}
+.detail-header .actions button:hover{background:var(--surface);color:var(--fg)}
+.detail-header .actions .play{background:var(--accent);border-color:var(--accent);color:#fff}
+.detail-header .actions .play:hover{background:var(--accent3)}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.preview-area{background:var(--bg3);border-radius:var(--radius);height:400px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid var(--border)}
+.preview-area .big{font-size:64px;opacity:.4}
+.preview-area .dots{position:absolute;bottom:16px;display:flex;gap:6px}
+.preview-area .dots span{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:var(--transition)}
+.preview-area .dots span.active{background:var(--accent2);width:20px;border-radius:3px}
+.filmstrip{display:flex;gap:8px;overflow-x:auto;margin:12px 0 20px;padding-bottom:4px}
+.filmstrip .thumb{flex-shrink:0;width:80px;height:56px;background:var(--surface);border-radius:6px;cursor:pointer;border:2px solid transparent;transition:var(--transition);display:flex;align-items:center;justify-content:center;font-size:18px}
+.filmstrip .thumb:hover{border-color:var(--fg4)}
+.filmstrip .thumb.active{border-color:var(--accent2)}
+
+.info-panel{background:var(--bg2);border-radius:var(--radius);padding:24px;border:1px solid var(--border)}
+.info-panel .code{font-family:Georgia,serif;font-size:20px;color:var(--accent2);display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.info-panel .code .copy{font-size:11px;color:var(--fg4);cursor:pointer;padding:2px 10px;border-radius:8px;background:var(--surface);transition:var(--transition)}
+.info-panel .code .copy:hover{background:var(--border);color:var(--fg)}
+.info-panel .title{font-size:17px;margin-bottom:16px;line-height:1.5}
+.info-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.info-fields .f{font-size:12px;color:var(--fg4)}
+.info-fields .f strong{display:block;color:var(--fg);font-weight:400;font-size:13px;margin-top:2px}
+.info-fields .f .link{color:var(--accent2);cursor:pointer;transition:var(--transition)}
+.info-fields .f .link:hover{color:var(--accent)}
+
+.tags-section{margin-bottom:12px}
+.tags-section .gLabel{font-size:10px;color:var(--fg4);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.tags-section .tags{display:flex;flex-wrap:wrap;gap:5px}
+.tags-section .tags .t{padding:4px 12px;border-radius:12px;font-size:11px}
+.tags-section .tags .t.red{background:rgba(162,74,58,.2);color:var(--rose);border:1px solid rgba(162,74,58,.25)}
+.tags-section .tags .t.blue{background:rgba(59,100,140,.2);color:var(--blue);border:1px solid rgba(59,100,140,.25)}
+
+.detail-actions{display:flex;gap:8px;margin-top:16px}
+.detail-actions button{padding:8px 18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--fg3);font-size:12px;transition:var(--transition)}
+.detail-actions button:hover{background:var(--border);color:var(--fg)}
+
+/* ===== 女优卡片 ===== */
+.actress-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.actress-grid .acard{background:var(--bg2);border-radius:var(--radius);padding:20px;text-align:center;border:1px solid var(--border);transition:var(--transition);cursor:pointer}
+.actress-grid .acard:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,.3);border-color:rgba(162,74,58,.3)}
+.actress-grid .acard .avatar{width:72px;height:72px;border-radius:50%;background:var(--surface);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid var(--border);transition:var(--transition)}
+.actress-grid .acard:hover .avatar{border-color:var(--accent2)}
+.actress-grid .acard .aname{font-size:14px;font-weight:600}
+.actress-grid .acard .asub{font-size:11px;color:var(--fg3);margin-top:4px;display:flex;justify-content:center;gap:10px}
+.actress-grid .acard .acount{font-size:11px;color:var(--accent2);margin-top:6px}
+
+/* ===== 收藏页 ===== */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-bar .tab{padding:10px 24px;font-size:13px;color:var(--fg3);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition)}
+.tab-bar .tab:hover{color:var(--fg)}
+.tab-bar .tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+
+/* ===== 标签浏览 ===== */
+.tag-browser{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tag-browser .tgroup{background:var(--bg2);border-radius:var(--radius);padding:18px;border:1px solid var(--border)}
+.tag-browser .tgroup .gtitle{font-family:Georgia,serif;font-size:15px;color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tag-browser .tgroup .gcount{font-size:10px;color:var(--fg4);font-family:'Segoe UI',sans-serif}
+.tag-browser .tgroup .gtags{display:flex;flex-wrap:wrap;gap:6px}
+.tag-browser .tgroup .gtags span{padding:5px 12px;border-radius:12px;font-size:12px;background:var(--surface);color:var(--fg3);border:1px solid var(--border);cursor:pointer;transition:var(--transition)}
+.tag-browser .tgroup .gtags span:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ===== 网站导航 ===== */
+.website-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.website-grid .wsite{background:var(--bg2);border-radius:var(--radius);padding:18px;border:1px solid var(--border);cursor:pointer;transition:var(--transition)}
+.website-grid .wsite:hover{transform:translateY(-3px);border-color:rgba(162,74,58,.3)}
+.website-grid .wsite .wico{font-size:28px;margin-bottom:8px}
+.website-grid .wsite .wname{font-size:14px;font-weight:600}
+.website-grid .wsite .wurl{font-size:11px;color:var(--fg4);margin-top:4px;word-break:break-all}
+.website-grid .wsite .wdesc{font-size:11px;color:var(--fg3);margin-top:4px}
+
+/* ===== 设置 ===== */
+.settings-group{max-width:600px}
+.settings-group .sg{background:var(--bg2);border-radius:var(--radius);padding:20px;margin-bottom:14px;border:1px solid var(--border)}
+.settings-group .sg .sglabel{font-size:13px;font-weight:600;margin-bottom:4px}
+.settings-group .sg .sgdesc{font-size:11px;color:var(--fg4);margin-bottom:12px}
+.settings-group .sg .sgrow{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.settings-group .sg input[type=text]{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--fg);font-size:13px;outline:none}
+.settings-group .sg input[type=text]:focus{border-color:var(--accent)}
+.settings-group .sg .btn{padding:7px 18px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--fg3);font-size:12px;transition:var(--transition)}
+.settings-group .sg .btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.settings-group .sg .toggle{display:flex;align-items:center;gap:10px;cursor:pointer}
+.settings-group .sg .toggle .track{width:36px;height:20px;border-radius:10px;background:var(--border);position:relative;transition:var(--transition)}
+.settings-group .sg .toggle .track .dot{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--fg3);transition:var(--transition)}
+.settings-group .sg .toggle.on .track{background:var(--accent)}
+.settings-group .sg .toggle.on .track .dot{left:18px;background:#fff}
+
+/* ===== 空状态 / 加载 / 错误 ===== */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:var(--fg4)}
+.empty-state .icon{font-size:48px;margin-bottom:16px;opacity:.4}
+.empty-state .msg{font-size:15px;margin-bottom:6px}
+.empty-state .sub{font-size:12px;color:var(--fg4)}
+
+.loading-state{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:var(--fg4);font-size:13px}
+.loading-state .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.error-state{display:flex;flex-direction:column;align-items:center;padding:60px;color:var(--fg4)}
+.error-state .icon{font-size:36px;margin-bottom:12px}
+.error-state .msg{font-size:14px;color:var(--rose);margin-bottom:4px}
+.error-state .sub{font-size:12px}
+.error-state .retry{margin-top:16px;padding:8px 24px;border-radius:16px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:13px;transition:var(--transition)}
+.error-state .retry:hover{background:var(--accent);color:#fff}
+
+/* ===== 弹窗 ===== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal.open{opacity:1;pointer-events:all}
+.modal .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;min-width:400px;max-width:560px;box-shadow:var(--shadow)}
+.modal .modal-box h2{font-family:Georgia,serif;font-size:18px;color:var(--accent2);margin-bottom:16px}
+.modal .modal-box .modal-body{font-size:13px;color:var(--fg3);margin-bottom:20px;line-height:1.6}
+.modal .modal-box .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal .modal-box .modal-actions button{padding:8px 22px;border-radius:16px;font-size:13px}
+.modal .modal-box .modal-actions .secondary{background:var(--surface);border:1px solid var(--border);color:var(--fg3)}
+.modal .modal-box .modal-actions .secondary:hover{background:var(--border)}
+.modal .modal-box .modal-actions .primary{background:var(--accent);border:none;color:#fff}
+.modal .modal-box .modal-actions .primary:hover{background:var(--accent3)}
+.modal .modal-box .modal-actions .danger{background:rgba(162,74,58,.2);border:1px solid var(--accent);color:var(--rose)}
+.modal .modal-box .modal-actions .danger:hover{background:var(--accent);color:#fff}
+
+/* ===== 底部加载条 ===== */
+.load-more{text-align:center;padding:24px 0 8px}
+.load-more .btn-load{padding:10px 32px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--fg3);font-size:13px;transition:var(--transition)}
+.load-more .btn-load:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- 右键菜单 -->
+<div class="ctx" id="ctxMenu">
+  <div class="ctx-item">▶ 播放</div>
+  <div class="ctx-item">📂 打开文件位置</div>
+  <div class="ctx-item">✏️ 编辑影片</div>
+  <div class="ctx-item" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">♥ 收藏</div>
+  <div class="ctx-item danger" style="margin-top:2px">🗑️ 删除</div>
+</div>
+
+<div class="app">
+
+<!-- ===== 侧边栏 ===== -->
+<nav class="sidebar">
+  <div class="logo">🎞<span>CINEMA</span></div>
+
+  <div class="grp">浏览</div>
+  <a class="nav-item active" data-view="movieList" href="#"><span class="ico">📽️</span>全部影片 <span class="badge">1,304</span></a>
+  <a class="nav-item" data-view="movieList?cat=av" href="#"><span class="ico">🔞</span>AV <span class="badge">892</span></a>
+  <a class="nav-item" data-view="movieList?cat=anime" href="#"><span class="ico">🎨</span>动漫 <span class="badge">156</span></a>
+  <a class="nav-item" data-view="movieList?cat=euro" href="#"><span class="ico">🌍</span>欧美 <span class="badge">134</span></a>
+  <a class="nav-item" data-view="movieList?cat=cn" href="#"><span class="ico">🇨🇳</span>国产 <span class="badge">122</span></a>
+
+  <div class="sep"></div>
+  <div class="grp">发现</div>
+  <a class="nav-item" data-view="actressList" href="#"><span class="ico">👩</span>女优 <span class="badge">2,557</span></a>
+  <a class="nav-item" data-view="favorites" href="#"><span class="ico">♥</span>收藏</a>
+  <a class="nav-item" data-view="tags" href="#"><span class="ico">🏷️</span>标签</a>
+  <a class="nav-item" data-view="websites" href="#"><span class="ico">🌐</span>网站导航</a>
+
+  <div class="sep"></div>
+  <div class="grp">管理</div>
+  <a class="nav-item" data-view="addMovie" href="#"><span class="ico">➕</span>添加影片</a>
+  <a class="nav-item" data-view="settings" href="#"><span class="ico">⚙️</span>设置</a>
+</nav>
+
+<!-- ===== 主区域 ===== -->
+<div class="main">
+
+  <!-- ===== 顶栏 ===== -->
+  <div class="topbar">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input placeholder="搜索影片或女优..." id="globalSearch">
+    </div>
+    <div class="actions">
+      <button>🎲 随机</button>
+    </div>
+  </div>
+
+  <!-- ===== 影片列表视图 ===== -->
+  <div class="view" id="viewMovieList">
+    <div class="sort-bar">
+      <span class="opt active">加入日期</span>
+      <span class="opt">发行日期</span>
+      <span class="opt">女优名</span>
+      <span class="opt">播放次数</span>
+      <span class="spacer"></span>
+      <span class="view-count">1,304 部影片</span>
+      <span style="width:12px"></span>
+      <div class="filter-group">
+        <span class="tag active">中文字幕</span>
+        <span class="tag">破解版</span>
+        <span class="tag">无码</span>
+      </div>
+    </div>
+
+    <!-- 正常状态 -->
+    <div class="grid" style="padding:24px 28px" id="movieGrid">
+      <div class="card" onclick="showDetail()">
+        <div class="thumb">
+          <div class="flags"><span class="accent">🔥 精选</span><span>中字</span></div>
+          <span class="fav">♡</span>🎬
+        </div>
+        <div class="body">
+          <div class="code">CEMD-561</div>
+          <div class="title">心と体を癒す、最高のひととき 山手梨愛</div>
+          <div class="meta"><span>2024-07-20</span><span>120min</span></div>
+          <div class="tags"><span class="r">巨乳</span><span class="r">美乳</span><span class="b">丝袜</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><div class="flags"><span>无码</span></div><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">PAIS-079</div>
+          <div class="title">山手梨愛 J-cup 魔女 7SEX 4時間</div>
+          <div class="meta"><span>2024-12-27</span><span>240min</span></div>
+          <div class="tags"><span class="r">巨乳</span><span class="b">中出</span><span class="b">3P</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><div class="flags"><span class="accent">🔥</span></div><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">STAR-123</div>
+          <div class="title">三上悠亜 引退 ラストステージ</div>
+          <div class="meta"><span>2024-03-15</span><span>180min</span></div>
+          <div class="tags"><span class="r">单体</span><span class="r">引退</span><span class="b">感动</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">SSNI-456</div>
+          <div class="title">橋本ありな 初体験ドキュメント</div>
+          <div class="meta"><span>2023-11-08</span><span>150min</span></div>
+          <div class="tags"><span class="r">美乳</span><span class="b">制服</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><div class="flags"><span>4K</span></div><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">ABW-789</div>
+          <div class="title">葵つかさ 無修正 4K スペシャル</div>
+          <div class="meta"><span>2024-01-20</span><span>120min</span></div>
+          <div class="tags"><span class="b">无码</span><span class="b">4K</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><span class="fav active">♥</span>🎬</div>
+        <div class="body">
+          <div class="code">MIDV-111</div>
+          <div class="title">石川澪 新人 ファーストインプレッション</div>
+          <div class="meta"><span>2024-06-01</span><span>120min</span></div>
+          <div class="tags"><span class="r">新人</span><span class="b">高清</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">CAWD-222</div>
+          <div class="title">伊藤舞雪 密着 120%</div>
+          <div class="meta"><span>2024-09-12</span><span>150min</span></div>
+          <div class="tags"><span class="r">美脚</span><span class="b">丝袜</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">JUFE-333</div>
+          <div class="title">楪カレン 3P 拘束 スペシャル</div>
+          <div class="meta"><span>2024-05-30</span><span>120min</span></div>
+          <div class="tags"><span class="b">3P</span><span class="b">拘束</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><div class="flags"><span>中字</span></div><span class="fav">♡</span>🎬</div>
+        <div class="body">
+          <div class="code">FSDSS-444</div>
+          <div class="title">天使もえ 中出し 20連発</div>
+          <div class="meta"><span>2024-02-14</span><span>180min</span></div>
+          <div class="tags"><span class="b">中出</span><span class="r">天使</span></div>
+        </div>
+      </div>
+      <div class="card" onclick="showDetail()">
+        <div class="thumb"><span class="fav active">♥</span>🎬</div>
+        <div class="body">
+          <div class="code">IPX-555</div>
+          <div class="title">桃乃木かな 3周年 スペシャル</div>
+          <div class="meta"><span>2023-12-25</span><span>150min</span></div>
+          <div class="tags"><span class="b">コスプレ</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载状态 -->
+    <div class="loading-state" style="display:none" id="loadingState">
+      <div class="spinner"></div>
+      <span>正在加载影片...</span>
+    </div>
+
+    <!-- 空状态 -->
+    <div class="empty-state" style="display:none" id="emptyState">
+      <div class="icon">📭</div>
+      <div class="msg">还没有影片</div>
+      <div class="sub">点击"添加影片"开始建立你的收藏</div>
+    </div>
+
+    <!-- 错误状态 -->
+    <div class="error-state" style="display:none" id="errorState">
+      <div class="icon">⚠️</div>
+      <div class="msg">加载失败</div>
+      <div class="sub">数据库连接异常，请检查媒体文件路径</div>
+      <button class="retry">🔄 重试</button>
+    </div>
+
+    <div class="load-more"><button class="btn-load">🎬 加载更多 (10 / 1,304)</button></div>
+  </div>
+
+  <!-- ===== 影片详情视图 ===== -->
+  <div class="view hidden" id="viewMovieDetail">
+    <div class="detail-header">
+      <span class="back" onclick="showView('movieList')">◀</span>
+      <span class="loc">影片详情</span>
+      <div class="actions">
+        <button>✏️ 编辑</button>
+        <button>♥ 收藏</button>
+        <button class="play">▶ 播放</button>
+      </div>
+    </div>
+    <div class="preview-area">
+      <div class="big">🎬</div>
+      <div class="dots"><span></span><span class="active"></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="filmstrip">
+      <div class="thumb active">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div>
+    </div>
+    <div class="detail-grid">
+      <div class="info-panel">
+        <div class="code">CEMD-561 <span class="copy">📋 复制</span></div>
+        <div style="font-size:12px;color:var(--accent2);margin-bottom:4px">AV · 有码</div>
+        <div class="title">心と体を癒す、最高のひととき 山手梨愛</div>
+        <div class="info-fields">
+          <div class="f">女优 <strong><span class="link" onclick="showView('actressDetail')">山手梨愛 →</span></strong></div>
+          <div class="f">发行 <strong>2024-07-20</strong></div>
+          <div class="f">时长 <strong>120 分钟</strong></div>
+          <div class="f">系列 <strong>MERCURY</strong></div>
+          <div class="f">播放 <strong>0 次</strong></div>
+          <div class="f">大小 <strong>3.2 GB</strong></div>
+        </div>
+      </div>
+      <div class="info-panel">
+        <div class="tags-section">
+          <div class="gLabel">👩 女优标签</div>
+          <div class="tags"><span class="t red">巨乳</span><span class="t red">美乳</span><span class="t red">单体</span></div>
+        </div>
+        <div class="tags-section">
+          <div class="gLabel">🏷️ 影片标签</div>
+          <div class="tags"><span class="t blue">丝袜</span><span class="t blue">制服</span><span class="t blue">办公室</span><span class="t blue">中出</span><span class="t blue">巨根</span></div>
+        </div>
+        <div class="detail-actions">
+          <button>🌐 翻译片名</button>
+          <button>📂 打开位置</button>
+          <button>🔗 在线搜索</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 女优列表视图 ===== -->
+  <div class="view hidden" id="viewActressList">
+    <div class="sort-bar">
+      <span class="opt active">作品数</span>
+      <span class="opt">姓名</span>
+      <span class="opt">评分</span>
+      <span class="spacer"></span>
+      <span class="view-count">2,557 位女优</span>
+      <span style="width:12px"></span>
+      <div class="filter-group">
+        <span class="tag">AV</span>
+        <span class="tag">动漫</span>
+        <span class="tag">欧美</span>
+        <span class="tag">国产</span>
+      </div>
+    </div>
+    <div class="actress-grid" style="padding:24px 28px">
+      <div class="acard" onclick="showView('actressDetail')">
+        <div class="avatar">🎭</div>
+        <div class="aname">山手梨愛</div>
+        <div class="asub"><span>G罩杯</span><span>150cm</span></div>
+        <div class="acount">42 部作品</div>
+      </div>
+      <div class="acard" onclick="showView('actressDetail')">
+        <div class="avatar">🎭</div>
+        <div class="aname">三上悠亜</div>
+        <div class="asub"><span>F罩杯</span><span>159cm</span></div>
+        <div class="acount">38 部作品</div>
+      </div>
+      <div class="acard" onclick="showView('actressDetail')">
+        <div class="avatar">🎭</div>
+        <div class="aname">橋本ありな</div>
+        <div class="asub"><span>D罩杯</span><span>163cm</span></div>
+        <div class="acount">35 部作品</div>
+      </div>
+      <div class="acard" onclick="showView('actressDetail')">
+        <div class="avatar">🎭</div>
+        <div class="aname">葵つかさ</div>
+        <div class="asub"><span>E罩杯</span><span>160cm</span></div>
+        <div class="acount">31 部作品</div>
+      </div>
+      <div class="acard" onclick="showView('actressDetail')">
+        <div class="avatar">🎭</div>
+        <div class="aname">桃乃木かな</div>
+        <div class="asub"><span>C罩杯</span><span>153cm</span></div>
+        <div class="acount">29 部作品</div>
+      </div>
+    </div>
+    <div class="load-more"><button class="btn-load">加载更多女优</button></div>
+  </div>
+
+  <!-- ===== 女优详情视图 ===== -->
+  <div class="view hidden" id="viewActressDetail">
+    <div class="detail-header">
+      <span class="back" onclick="showView('actressList')">◀</span>
+      <span class="loc">女优详情</span>
+      <div class="actions">
+        <button>✏️ 编辑</button>
+        <button>♥ 收藏</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:28px;align-items:flex-start;margin-bottom:28px">
+      <div style="width:140px;height:140px;border-radius:50%;background:var(--surface);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0">🎭</div>
+      <div>
+        <h1 style="font-family:Georgia,serif;font-size:26px;color:var(--accent2)">山手梨愛</h1>
+        <div style="font-size:13px;color:var(--fg3);margin-top:4px">やまて りあ · Yamate Ria</div>
+        <div style="display:flex;gap:20px;margin-top:14px;flex-wrap:wrap">
+          <div style="font-size:12px;color:var(--fg4)">生日 <strong style="color:var(--fg);display:block;font-weight:400">1994-11-10</strong></div>
+          <div style="font-size:12px;color:var(--fg4)">身高 <strong style="color:var(--fg);display:block;font-weight:400">150 cm</strong></div>
+          <div style="font-size:12px;color:var(--fg4)">三围 <strong style="color:var(--fg);display:block;font-weight:400">90-58-88</strong></div>
+          <div style="font-size:12px;color:var(--fg4)">罩杯 <strong style="color:var(--fg);display:block;font-weight:400">G</strong></div>
+          <div style="font-size:12px;color:var(--fg4)">出道 <strong style="color:var(--fg);display:block;font-weight:400">2015-07</strong></div>
+          <div style="font-size:12px;color:var(--fg4)">作品数 <strong style="color:var(--accent2);display:block;font-weight:700">42</strong></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:6px">
+          <span class="t red" style="padding:4px 12px;border-radius:12px;font-size:11px;background:rgba(162,74,58,.2);color:var(--rose);border:1px solid rgba(162,74,58,.25)">人工</span>
+          <span class="t red" style="padding:4px 12px;border-radius:12px;font-size:11px;background:rgba(162,74,58,.2);color:var(--rose);border:1px solid rgba(162,74,58,.25)">熟女</span>
+        </div>
+      </div>
+    </div>
+    <div class="sort-bar" style="padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <span style="font-size:13px;color:var(--fg3);font-weight:600">作品列表 · 42 部</span>
+      <div class="filter-group" style="margin-left:auto">
+        <span class="tag active">全部</span>
+        <span class="tag">有码</span>
+        <span class="tag">无码</span>
+        <span class="tag">中字</span>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card" onclick="showDetail()"><div class="thumb">🎬</div><div class="body"><div class="code">CEMD-561</div><div class="title">山手梨愛 心と体を癒す</div></div></div>
+      <div class="card" onclick="showDetail()"><div class="thumb">🎬</div><div class="body"><div class="code">PAIS-079</div><div class="title">山手梨愛 J-cup 魔女</div></div></div>
+      <div class="card" onclick="showDetail()"><div class="thumb">🎬</div><div class="body"><div class="code">CEMD-555</div><div class="title">山手梨愛 4時間</div></div></div>
+      <div class="card" onclick="showDetail()"><div class="thumb">🎬</div><div class="body"><div class="code">CEMD-550</div><div class="title">山手梨愛 初共演</div></div></div>
+      <div class="card" onclick="showDetail()"><div class="thumb">🎬</div><div class="body"><div class="code">CEMD-540</div><div class="title">山手梨愛 密着</div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 收藏视图 ===== -->
+  <div class="view hidden" id="viewFavorites">
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(this,'favMovies')">🎬 影片收藏 <span style="color:var(--fg4);margin-left:4px">12</span></div>
+      <div class="tab" onclick="switchTab(this,'favActresses')">👩 女优收藏 <span style="color:var(--fg4);margin-left:4px">5</span></div>
+    </div>
+    <div id="favMovies">
+      <div class="grid">
+        <div class="card"><div class="thumb"><span class="fav active">♥</span>🎬</div><div class="body"><div class="code">CEMD-561</div><div class="title">山手梨愛</div></div></div>
+        <div class="card"><div class="thumb"><span class="fav active">♥</span>🎬</div><div class="body"><div class="code">MIDV-111</div><div class="title">石川澪</div></div></div>
+        <div class="card"><div class="thumb"><span class="fav active">♥</span>🎬</div><div class="body"><div class="code">IPX-555</div><div class="title">桃乃木かな</div></div></div>
+      </div>
+    </div>
+    <div id="favActresses" style="display:none">
+      <div class="actress-grid">
+        <div class="acard"><div class="avatar">🎭</div><div class="aname">山手梨愛</div></div>
+        <div class="acard"><div class="avatar">🎭</div><div class="aname">三上悠亜</div></div>
+        <div class="acard"><div class="avatar">🎭</div><div class="aname">葵つかさ</div></div>
+      </div>
+    </div>
+    <div class="load-more"><button class="btn-load">加载更多</button></div>
+  </div>
+
+  <!-- ===== 标签浏览视图 ===== -->
+  <div class="view hidden" id="viewTags">
+    <div class="sort-bar" style="margin-bottom:16px">
+      <span style="font-size:14px;font-weight:600">🏷️ 所有标签</span>
+      <span style="font-size:12px;color:var(--fg4);margin-left:8px">48 个分类</span>
+      <span class="spacer"></span>
+      <button class="btn-load" style="padding:5px 16px;border-radius:14px;border:1px solid var(--border);background:var(--bg2);color:var(--fg3);font-size:12px">+ 新增分类</button>
+    </div>
+    <div class="tag-browser">
+      <div class="tgroup">
+        <div class="gtitle">🎯 主题 <span class="gcount">12</span></div>
+        <div class="gtags"><span>单体 (213)</span><span>合集 (45)</span><span>引退 (23)</span><span>新人 (31)</span><span>复出 (7)</span></div>
+      </div>
+      <div class="tgroup">
+        <div class="gtitle">🔞 行为 <span class="gcount">18</span></div>
+        <div class="gtags"><span>中出 (156)</span><span>3P (89)</span><span>双插 (45)</span><span>颜射 (67)</span><span>口交 (123)</span><span>拘束 (34)</span></div>
+      </div>
+      <div class="tgroup">
+        <div class="gtitle">👗 服饰 <span class="gcount">9</span></div>
+        <div class="gtags"><span>制服 (87)</span><span>丝袜 (134)</span><span>JK (56)</span><span>和服 (23)</span><span>泳装 (45)</span><span>裸体围裙 (34)</span></div>
+      </div>
+      <div class="tgroup">
+        <div class="gtitle">💪 体型 <span class="gcount">7</span></div>
+        <div class="gtags"><span>巨乳 (156)</span><span>美乳 (89)</span><span>贫乳 (23)</span><span>美腿 (67)</span><span>丰满 (45)</span><span>瘦长 (12)</span></div>
+      </div>
+      <div class="tgroup">
+        <div class="gtitle">🎬 画质 <span class="gcount">5</span></div>
+        <div class="gtags"><span>高清 (89)</span><span>4K (27)</span><span>VR (18)</span><span>无码 (33)</span><span>中文字幕 (42)</span></div>
+      </div>
+      <div class="tgroup">
+        <div class="gtitle">🌍 场景 <span class="gcount">11</span></div>
+        <div class="gtags"><span>办公室 (34)</span><span>学校 (45)</span><span>温泉 (23)</span><span>医院 (12)</span><span>电车 (56)</span><span>野外 (34)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 网站导航视图 ===== -->
+  <div class="view hidden" id="viewWebsites">
+    <div class="sort-bar" style="margin-bottom:16px">
+      <span style="font-size:14px;font-weight:600">🌐 网站导航</span>
+      <span class="spacer"></span>
+      <button class="btn-load" style="padding:5px 16px;border-radius:14px;border:1px solid var(--border);background:var(--bg2);color:var(--fg3);font-size:12px">+ 添加网站</button>
+    </div>
+    <div class="website-grid">
+      <div class="wsite">
+        <div class="wico">📖</div>
+        <div class="wname">JavDB</div>
+        <div class="wurl">javdb.com</div>
+        <div class="wdesc">AV 影片数据库，番号查询</div>
+      </div>
+      <div class="wsite">
+        <div class="wico">🚌</div>
+        <div class="wname">JavBus</div>
+        <div class="wurl">javbus.com</div>
+        <div class="wdesc">AV 在线播放站</div>
+      </div>
+      <div class="wsite">
+        <div class="wico">📺</div>
+        <div class="wname">AVSox</div>
+        <div class="wurl">avsox.click</div>
+        <div class="wdesc">AV 番号查询（中文）</div>
+      </div>
+      <div class="wsite">
+        <div class="wico">🔞</div>
+        <div class="wname">FC2 PPV DB</div>
+        <div class="wurl">fc2ppvdb.com</div>
+        <div class="wdesc">FC2 个人制作查询</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 添加影片视图 ===== -->
+  <div class="view hidden" id="viewAddMovie">
+    <div style="max-width:520px">
+      <h2 style="font-family:Georgia,serif;font-size:20px;color:var(--accent2);margin-bottom:6px">➕ 添加影片</h2>
+      <p style="font-size:13px;color:var(--fg4);margin-bottom:20px">输入番号自动抓取信息，或手动填写</p>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px">
+        <div style="display:flex;gap:12px;margin-bottom:20px">
+          <input type="text" placeholder="输入番号，如 CEMD-561" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;color:var(--fg);font-size:14px;outline:none">
+          <button style="background:var(--accent);border:none;border-radius:12px;padding:10px 24px;color:#fff;font-weight:600;font-size:13px;transition:var(--transition)">🔍 抓取</button>
+        </div>
+        <div style="text-align:center;padding:40px 0;color:var(--fg4)">
+          <div style="font-size:36px;margin-bottom:12px">📥</div>
+          <div style="font-size:13px">输入番号后点击"抓取"，自动填写影片信息</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 设置视图 ===== -->
+  <div class="view hidden" id="viewSettings">
+    <h2 style="font-family:Georgia,serif;font-size:20px;color:var(--accent2);margin-bottom:20px">⚙️ 设置</h2>
+    <div class="settings-group">
+      <div class="sg">
+        <div class="sglabel">▶️ 播放器路径</div>
+        <div class="sgdesc">自定义外部播放器，留空使用系统默认</div>
+        <div class="sgrow"><input type="text" placeholder="例如 C:\Program Files\MPC-HC\mpc-hc.exe" value=""><button class="btn">浏览</button></div>
+      </div>
+      <div class="sg">
+        <div class="sglabel">📁 媒体根目录</div>
+        <div class="sgdesc">视频文件存放的根路径</div>
+        <div class="sgrow"><input type="text" value="G:\aiqiyi"><button class="btn">浏览</button></div>
+      </div>
+      <div class="sg">
+        <div class="sglabel">🌐 翻译 API</div>
+        <div class="sgdesc">用于翻译片名（如 DeepSeek API）</div>
+        <div class="sgrow"><input type="text" placeholder="输入 API Key"></div>
+        <div class="sgrow" style="margin-top:8px">
+          <span style="font-size:12px;color:var(--fg4)">接口地址：</span>
+          <input type="text" value="https://api.deepseek.com/v1/chat/completions" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--fg);font-size:12px;outline:none">
+        </div>
+      </div>
+      <div class="sg">
+        <div class="sglabel">👩 女优同步</div>
+        <div class="sgdesc">扫描影片目录，自动发现未录入的女优</div>
+        <div class="sgrow">
+          <div class="toggle" onclick="this.classList.toggle('on')">
+            <div class="track"><div class="dot"></div></div>
+            <span style="font-size:13px">启用自动同步</span>
+          </div>
+          <button class="btn" style="margin-left:auto">立即扫描</button>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="sglabel">🔗 关联影片</div>
+        <div class="sgdesc">按文件名自动匹配女优和封面</div>
+        <div class="sgrow"><button class="btn">开始关联</button></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- 删除确认弹窗 -->
+<div class="modal" id="deleteModal">
+  <div class="modal-box">
+    <h2>🗑️ 确认删除</h2>
+    <div class="modal-body">
+      确定要删除 <strong>CEMD-561</strong> 吗？<br>
+      此操作只移除数据库记录，不会删除视频文件。
+    </div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('deleteModal')">取消</button>
+      <button class="danger">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 右键菜单
+document.addEventListener('contextmenu', e => {
+  const card = e.target.closest('.card');
+  if(card) {
+    e.preventDefault();
+    const ctx = document.getElementById('ctxMenu');
+    ctx.style.display = 'block';
+    ctx.style.left = e.clientX + 'px';
+    ctx.style.top = e.clientY + 'px';
+    // 点击菜单项
+    ctx.querySelectorAll('.ctx-item').forEach(item => {
+      item.onclick = () => {
+        if(item.textContent.includes('删除')) {
+          document.getElementById('deleteModal').classList.add('open');
+        }
+        ctx.style.display = 'none';
+      };
+    });
+  }
+});
+document.addEventListener('click', e => {
+  if(!e.target.closest('.ctx')) document.getElementById('ctxMenu').style.display = 'none';
+});
+
+// 视图切换
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  const map = {
+    movieList:'viewMovieList', movieDetail:'viewMovieDetail',
+    actressList:'viewActressList', actressDetail:'viewActressDetail',
+    favorites:'viewFavorites', tags:'viewTags',
+    websites:'viewWebsites', addMovie:'viewAddMovie',
+    settings:'viewSettings'
+  };
+  const el = document.getElementById(map[name] || 'viewMovieList');
+  if(el) el.classList.remove('hidden');
+  // 侧边栏高亮
+  document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+  if(name === 'movieList') document.querySelector('[data-view="movieList"]').classList.add('active');
+  else document.querySelector(`[data-view="${name}"]`)?.classList.add('active');
+  // 搜索隐藏
+  if(name === 'movieDetail' || name === 'actressDetail') {
+    document.querySelector('.topbar').style.display = 'none';
+  } else {
+    document.querySelector('.topbar').style.display = 'flex';
+  }
+}
+function showDetail() { showView('movieDetail'); }
+
+window.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+});
+
+// 搜索
+document.getElementById('globalSearch').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && e.target.value.trim()) {
+    showView('movieList');
+    e.target.blur();
+  }
+});
+
+// Tab切换
+function switchTab(el, targetId) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  el.closest('.view').querySelectorAll('[id^="fav"]').forEach(v => v.style.display = 'none');
+  document.getElementById(targetId).style.display = 'block';
+}
+
+// 排序
+document.querySelectorAll('.sort-bar .opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    opt.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+document.querySelectorAll('.filter-group .tag').forEach(t => {
+  t.addEventListener('click', () => t.classList.toggle('active'));
+});
+
+// 关闭弹窗
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.getElementById('deleteModal').addEventListener('click', e => {
+  if(e.target === e.currentTarget) closeModal('deleteModal');
+});
+</script>
+</body>
+</html>

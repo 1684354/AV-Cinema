@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 1 · 影院 Lounge</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f5f0eb;color:#3b2f2a;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:200px;background:#faf7f4;border-right:1px solid #e8ddd5;padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.sidebar .logo{font-family:Georgia,serif;font-size:22px;color:#a24a3a;margin-bottom:20px;padding:8px 12px;letter-spacing:2px}
+.sidebar a{display:block;padding:10px 12px;border-radius:12px;text-decoration:none;color:#6b5b53;font-size:14px;transition:all .2s}
+.sidebar a:hover{background:#f0e8e0;color:#3b2f2a}
+.sidebar a.active{background:#a24a3a;color:#fff;font-weight:600}
+.sidebar .sep{margin:12px 0;border-top:1px solid #e8ddd5}
+.sidebar .label{font-size:11px;color:#b5a69c;padding:8px 12px 4px;text-transform:uppercase;letter-spacing:1px}
+.main{flex:1;overflow-y:auto;padding:0}
+.topbar{display:flex;align-items:center;padding:20px 32px;gap:16px;background:#f5f0eb;position:sticky;top:0;z-index:10}
+.search{flex:1;background:#fff;border:1px solid #e8ddd5;border-radius:24px;padding:12px 24px;font-size:14px;outline:none;transition:all .2s}
+.search:focus{border-color:#a24a3a;box-shadow:0 0 0 3px rgba(162,74,58,.12)}
+.content{padding:0 32px 40px}
+
+.hero{background:linear-gradient(135deg,#3b2f2a,#5a4036);border-radius:24px;padding:40px;margin-bottom:32px;display:flex;gap:32px;align-items:center;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(162,74,58,.3),transparent 70%)}
+.hero-cover{width:200px;height:280px;background:linear-gradient(135deg,#d98e6a,#a24a3a);border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.hero-info h1{font-family:Georgia,serif;font-size:28px;margin-bottom:8px}
+.hero-info .sub{color:#cfa899;font-size:14px;margin-bottom:20px}
+.hero-info .badge{display:inline-block;background:#a24a3a;padding:6px 16px;border-radius:20px;font-size:13px}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
+.stat{background:#fff;border-radius:16px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(59,47,42,.06)}
+.stat .num{font-family:Georgia,serif;font-size:28px;color:#a24a3a;font-weight:700}
+.stat .lbl{font-size:13px;color:#8a7a72;margin-top:4px}
+
+.section-title{font-family:Georgia,serif;font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .arrow{color:#a24a3a;font-size:14px;cursor:pointer}
+
+.recent{display:flex;gap:16px;overflow-x:auto;padding-bottom:12px;margin-bottom:32px;scrollbar-width:thin;scrollbar-color:#d5c8be #f5f0eb}
+.recent-card{flex-shrink:0;width:160px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(59,47,42,.06);transition:all .25s;cursor:pointer}
+.recent-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(59,47,42,.12)}
+.recent-card .thumb{height:220px;background:linear-gradient(135deg,#e8ddd5,#d5c8be);display:flex;align-items:center;justify-content:center;font-size:32px}
+.recent-card .info{padding:12px}
+.recent-card .info .code{font-size:12px;color:#a24a3a;font-weight:600}
+.recent-card .info .title{font-size:13px;color:#3b2f2a;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.quick-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.quick-filters span{background:#fff;padding:8px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid #e8ddd5;transition:all .2s;color:#6b5b53}
+.quick-filters span:hover{background:#a24a3a;color:#fff;border-color:#a24a3a}
+
+.bottom-hint{text-align:center;padding:20px;color:#b5a69c;font-size:13px;border-top:1px solid #e8ddd5;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="logo">🎞️ CINEMA</div>
+  <div class="label">浏览</div>
+  <a href="#" class="active">全部</a>
+  <a href="#">AV</a><a href="#">动漫</a><a href="#">欧美</a><a href="#">国产</a>
+  <div class="sep"></div>
+  <div class="label">发现</div>
+  <a href="#">女优</a><a href="#">收藏</a><a href="#">网站</a><a href="#">标签</a>
+  <div class="sep"></div>
+  <div class="label">管理</div>
+  <a href="#">添加</a><a href="#">设置</a>
+</div>
+<div class="main">
+  <div class="topbar"><input class="search" placeholder="🔍 搜索影片或女优..."></div>
+  <div class="content">
+    <div class="hero">
+      <div class="hero-cover">🎬</div>
+      <div class="hero-info">
+        <h1>CEMD-561</h1>
+        <div class="sub">山手梨愛 · 2024-07-20</div>
+        <div class="badge">❤️ 今日精选</div>
+        <p style="margin-top:16px;color:#cfa899;font-size:14px;max-width:400px">心と体を癒す、最高のひととき——山手梨愛の美しさに酔いしれる90分。</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">1,304</div><div class="lbl">影片</div></div>
+      <div class="stat"><div class="num">2,557</div><div class="lbl">女优</div></div>
+      <div class="stat"><div class="num">27</div><div class="lbl">标签分类</div></div>
+      <div class="stat"><div class="num">158</div><div class="lbl">GB 总量</div></div>
+      <div class="stat"><div class="num">87%</div><div class="lbl">已整理</div></div>
+    </div>
+    <div class="section-title">🔥 最近添加 <span class="arrow">→</span></div>
+    <div class="recent">
+      <div class="recent-card"><div class="thumb">🎬</div><div class="info"><div class="code">PAIS-079</div><div class="title">山手梨愛 J-cup</div></div></div>
+      <div class="recent-card"><div class="thumb">🎬</div><div class="info"><div class="code">STAR-123</div><div class="title">三上悠亜</div></div></div>
+      <div class="recent-card"><div class="thumb">🎬</div><div class="info"><div class="code">SSNI-456</div><div class="title">橋本ありな</div></div></div>
+      <div class="recent-card"><div class="thumb">🎬</div><div class="info"><div class="code">ABW-789</div><div class="title">葵つかさ</div></div></div>
+      <div class="recent-card"><div class="thumb">🎬</div><div class="info"><div class="code">MIDV-111</div><div class="title">石川澪</div></div></div>
+    </div>
+    <div class="section-title">🏷️ 快速筛选</div>
+    <div class="quick-filters">
+      <span>中文字幕</span><span>无码</span><span>破解版</span><span>4K</span><span>单体作</span><span>VR</span>
+    </div>
+    <div class="bottom-hint">↓ 向下滚动进入完整影片列表</div>
+  </div>
+</div>
+</div>
+</body>
+</html>

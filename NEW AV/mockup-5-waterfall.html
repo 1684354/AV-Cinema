@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 5 · 瀑布流</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f7f2ec;color:#3b2f2a}
+
+/* 顶部 mini 侧栏 */
+.top-strip{display:flex;align-items:center;padding:12px 32px;background:#fff;border-bottom:1px solid #ece4dc;position:sticky;top:0;z-index:20;gap:24px}
+.top-strip .brand{font-family:Georgia,serif;font-size:20px;color:#a24a3a;font-weight:700;margin-right:16px}
+.top-strip a{font-size:13px;color:#6b5b53;text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .2s}
+.top-strip a:hover{color:#3b2f2a}
+.top-strip a.active{color:#fff;background:#a24a3a}
+.top-strip .search{margin-left:auto;background:#f7f2ec;border:none;border-radius:20px;padding:8px 18px;font-size:13px;outline:none;width:240px}
+
+/* 瀑布流：CSS columns */
+.waterfall{padding:24px 48px;column-count:5;column-gap:20px}
+@media(max-width:1400px){.waterfall{column-count:4}}
+@media(max-width:1100px){.waterfall{column-count:3}}
+
+.w-item{break-inside:avoid;margin-bottom:20px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(59,47,42,.04);transition:all .3s;cursor:pointer}
+.w-item:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(162,74,58,.12)}
+.w-item .thumb{width:100%;background:linear-gradient(135deg,#ece4dc,#d5c8be);display:flex;align-items:center;justify-content:center;font-size:32px;color:#8a7a72}
+.w-item .thumb.h-tall{aspect-ratio:3/4}
+.w-item .thumb.h-medi{aspect-ratio:4/5}
+.w-item .thumb.h-short{aspect-ratio:16/9}
+.w-item .body{padding:14px}
+.w-item .body .code{font-size:11px;color:#a24a3a;font-weight:700;letter-spacing:.5px}
+.w-item .body .title{font-size:13px;margin-top:4px;line-height:1.4;color:#3b2f2a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.w-item .body .meta{font-size:11px;color:#8a7a72;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.w-item .body .meta .tag{padding:2px 8px;border-radius:6px;background:#f0e8e0}
+.w-item .body .meta .tag.red{background:rgba(162,74,58,.12);color:#a24a3a}
+
+/* 精选横幅 */
+.feature-banner{grid-column:1/-1;background:linear-gradient(135deg,#3b2f2a,#5a4036);border-radius:20px;padding:32px;color:#fff;display:flex;gap:28px;align-items:center;margin-bottom:20px;break-inside:avoid}
+.feature-banner .poster{width:120px;height:160px;background:linear-gradient(135deg,#d98e6a,#a24a3a);border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px}
+.feature-banner .info h2{font-family:Georgia,serif;font-size:24px}
+.feature-banner .info p{color:#cfa899;font-size:13px;margin-top:6px}
+.feature-banner .info .badge{display:inline-block;background:#a24a3a;padding:4px 14px;border-radius:14px;font-size:12px;margin-top:12px}
+
+.load-more{text-align:center;padding:40px;color:#b5a69c;font-size:13px;grid-column:1/-1}
+.load-more span{background:#fff;padding:10px 32px;border-radius:24px;box-shadow:0 2px 8px rgba(59,47,42,.06);cursor:pointer;transition:all .2s;display:inline-block}
+.load-more span:hover{background:#a24a3a;color:#fff}
+</style>
+</head>
+<body>
+<div class="top-strip">
+  <div class="brand">🎞 CINEMA</div>
+  <a href="#" class="active">全部</a><a href="#">AV</a><a href="#">动漫</a><a href="#">欧美</a><a href="#">国产</a>
+  <a href="#">女优</a><a href="#">收藏</a><a href="#">标签</a>
+  <a href="#">添加</a>
+  <input class="search" placeholder="🔍 搜索...">
+</div>
+<div class="waterfall">
+
+  <div class="feature-banner">
+    <div class="poster">🎬</div>
+    <div class="info">
+      <h2>CEMD-561</h2>
+      <p>山手梨愛 · 心と体を癒す最高のひととき</p>
+      <div class="badge">🔥 今日精选</div>
+    </div>
+  </div>
+
+  <div class="w-item"><div class="thumb h-tall">🎬</div><div class="body"><div class="code">PAIS-079</div><div class="title">山手梨愛 J-cup 魔女 7SEX</div><div class="meta"><span>2024-12-27</span><span class="tag red">巨乳</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-medi">🎬</div><div class="body"><div class="code">STAR-123</div><div class="title">三上悠亜 引退作</div><div class="meta"><span>2024-03-15</span><span class="tag">引退</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-short">🎬</div><div class="body"><div class="code">SSNI-456</div><div class="title">橋本ありな 初体験 ドキュメント</div><div class="meta"><span>2023-11-08</span><span class="tag red">美乳</span><span class="tag">セーラー服</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-tall">🎬</div><div class="body"><div class="code">ABW-789</div><div class="title">葵つかさ 無修正 スペシャル</div><div class="meta"><span>2024-01-20</span><span class="tag">无码</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-short">🎬</div><div class="body"><div class="code">MIDV-111</div><div class="title">石川澪 新人 ファースト</div><div class="meta"><span>2024-06-01</span><span class="tag">新人</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-medi">🎬</div><div class="body"><div class="code">CAWD-222</div><div class="title">伊藤舞雪 密着ドキュメント</div><div class="meta"><span>2024-09-12</span><span class="tag red">美脚</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-tall">🎬</div><div class="body"><div class="code">JUFE-333</div><div class="title">楪カレン 3P スペシャル</div><div class="meta"><span>2024-05-30</span><span class="tag">3P</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-short">🎬</div><div class="body"><div class="code">FSDSS-444</div><div class="title">天使もえ 中出し</div><div class="meta"><span>2024-02-14</span><span class="tag">中字</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-medi">🎬</div><div class="body"><div class="code">IPX-555</div><div class="title">桃乃木かな デビュー3周年</div><div class="meta"><span>2023-12-25</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-tall">🎬</div><div class="body"><div class="code">PRED-666</div><div class="title">相沢みなみ 超大作 4時間</div><div class="meta"><span>2024-08-18</span><span class="tag">4K</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-short">🎬</div><div class="body"><div class="code">MIDE-777</div><div class="title">七沢みあ ご奉仕</div><div class="meta"><span>2024-04-22</span></div></div></div>
+
+  <div class="w-item"><div class="thumb h-medi">🎬</div><div class="body"><div class="code">STARS-888</div><div class="title">小野夕子 引退 ラスト</div><div class="meta"><span>2024-07-07</span><span class="tag red">引退</span></div></div></div>
+
+  <div class="load-more"><span>🎬 加载更多影片</span></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 2 · 暗房影集</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#1a1513;color:#f0ebe7;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:200px;background:#1f1a17;border-right:1px solid #2a2320;padding:24px 16px}
+.sidebar .logo{font-family:Georgia,serif;font-size:20px;color:#d98e6a;margin-bottom:24px;padding:8px 12px}
+.sidebar a{display:block;padding:10px 12px;border-radius:10px;text-decoration:none;color:#8a7a72;font-size:13px;transition:all .2s}
+.sidebar a:hover{background:#2a2320;color:#f0ebe7}
+.sidebar a.active{background:#a24a3a;color:#fff}
+.sidebar .sep{margin:12px 0;border-top:1px solid #2a2320}
+.sidebar .label{font-size:10px;color:#5a4d45;padding:8px 12px 4px;text-transform:uppercase;letter-spacing:1px}
+.main{flex:1;overflow-y:auto}
+.topbar{display:flex;align-items:center;padding:16px 32px;background:#1a1513;position:sticky;top:0;z-index:10;gap:16px}
+.topbar .back{font-size:18px;cursor:pointer;color:#d98e6a}
+.topbar .actions{margin-left:auto;display:flex;gap:12px}
+.topbar .actions button{padding:8px 18px;border-radius:20px;border:1px solid #3a2f2a;background:transparent;color:#f0ebe7;font-size:13px;cursor:pointer;transition:all .2s}
+.topbar .actions button:hover{background:#a24a3a;border-color:#a24a3a}
+.topbar .actions .play{background:#a24a3a;border-color:#a24a3a;font-weight:600}
+.content{padding:0 32px 40px}
+.preview-area{background:#0f0c0b;border-radius:20px;height:420px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;overflow:hidden}
+.preview-area .big-art{font-size:80px;opacity:.6}
+.preview-area .nav{position:absolute;bottom:20px;display:flex;gap:8px}
+.preview-area .nav span{width:8px;height:8px;border-radius:50%;background:#3a2f2a;cursor:pointer}
+.preview-area .nav span.active{background:#d98e6a;width:24px;border-radius:4px}
+.filmstrip{display:flex;gap:10px;overflow-x:auto;padding-bottom:16px;margin-bottom:24px;scrollbar-width:thin;scrollbar-color:#2a2320 #1a1513}
+.filmstrip .thumb{flex-shrink:0;width:100px;height:70px;background:#2a2320;border-radius:8px;cursor:pointer;transition:all .2s;border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:20px}
+.filmstrip .thumb:hover{border-color:#d98e6a;transform:translateY(-2px)}
+.filmstrip .thumb.active{border-color:#a24a3a}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.info-card{background:#1f1a17;border-radius:16px;padding:24px;border:1px solid #2a2320}
+.info-card .code{font-family:Georgia,serif;font-size:20px;color:#d98e6a;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.info-card .code .copy{font-size:12px;color:#6b5b53;cursor:pointer;padding:2px 8px;border-radius:8px;background:#2a2320}
+.info-card .title{font-size:18px;margin-bottom:16px;line-height:1.5}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.info-grid .item{font-size:13px;color:#8a7a72}
+.info-grid .item strong{color:#f0ebe7;display:block;font-weight:400;margin-top:2px}
+.tag-group{margin-bottom:12px}
+.tag-group .gLabel{font-size:11px;color:#5a4d45;margin-bottom:6px;text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags .tag{padding:4px 12px;border-radius:12px;font-size:12px}
+.tags .tag.red{background:rgba(162,74,58,.25);color:#e88a7a;border:1px solid rgba(162,74,58,.3)}
+.tags .tag.blue{background:rgba(59,100,140,.25);color:#7ab8e8;border:1px solid rgba(59,100,140,.3)}
+.actions-row{display:flex;gap:12px;margin-top:20px}
+.actions-row button{padding:10px 20px;border-radius:20px;border:1px solid #2a2320;background:transparent;color:#8a7a72;font-size:13px;cursor:pointer;transition:all .2s}
+.actions-row button:hover{background:#2a2320;color:#f0ebe7}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="logo">🎞️ CINEMA</div>
+  <div class="label">浏览</div>
+  <a href="#">全部</a><a href="#" class="active">AV</a><a href="#">动漫</a><a href="#">欧美</a><a href="#">国产</a>
+  <div class="sep"></div>
+  <div class="label">发现</div>
+  <a href="#">女优</a><a href="#">收藏</a><a href="#">网站</a><a href="#">标签</a>
+  <div class="sep"></div>
+  <div class="label">管理</div>
+  <a href="#">添加</a><a href="#">设置</a>
+</div>
+<div class="main">
+  <div class="topbar">
+    <span class="back">◀</span><span style="color:#8a7a72;font-size:13px;margin-left:8px">返回影片列表</span>
+    <div class="actions">
+      <button>✏️ 编辑</button><button>♥ 收藏</button><button class="play">▶ 播放</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="preview-area">
+      <div class="big-art">🎬</div>
+      <div class="nav"><span></span><span class="active"></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="filmstrip">
+      <div class="thumb active">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div><div class="thumb">🎬</div>
+    </div>
+    <div class="grid-2">
+      <div class="info-card">
+        <div class="code">CEMD-561 <span class="copy">📋 复制</span></div>
+        <div class="title">心と体を癒す、最高のひととき 山手梨愛</div>
+        <div class="info-grid">
+          <div class="item">女优 <strong>山手梨愛 →</strong></div>
+          <div class="item">发行日期 <strong>2024-07-20</strong></div>
+          <div class="item">时长 <strong>120 min</strong></div>
+          <div class="item">系列 <strong>MERCURY</strong></div>
+          <div class="item">播放 <strong>0 次</strong></div>
+          <div class="item">分类 <strong>AV · 有码</strong></div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="tag-group">
+          <div class="gLabel">👩 女优标签</div>
+          <div class="tags">
+            <span class="tag red">巨乳</span><span class="tag red">美乳</span><span class="tag red">单体</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="gLabel">🏷️ 影片标签</div>
+          <div class="tags">
+            <span class="tag blue">丝袜</span><span class="tag blue">制服</span><span class="tag blue">办公室</span><span class="tag blue">中出</span><span class="tag blue">巨根</span>
+          </div>
+        </div>
+        <div class="actions-row">
+          <button>🌐 翻译片名</button>
+          <button>📂 打开位置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 3 · 画廊网格</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f8f4f0;color:#3b2f2a;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:180px;background:#fff;border-right:1px solid #ece4dc;padding:24px 12px;display:flex;flex-direction:column;gap:2px}
+.sidebar .logo{font-family:Georgia,serif;font-size:24px;color:#a24a3a;text-align:center;margin-bottom:24px}
+.sidebar a{display:block;padding:10px 14px;border-radius:10px;text-decoration:none;color:#6b5b53;font-size:13px;transition:all .2s}
+.sidebar a:hover{background:#f0e8e0;color:#3b2f2a}
+.sidebar a.active{background:linear-gradient(135deg,#a24a3a,#c96a4a);color:#fff;font-weight:600}
+.sidebar .sep{margin:8px 0;border-top:1px solid #ece4dc}
+.main{flex:1;overflow-y:auto}
+.topbar{display:flex;align-items:center;padding:16px 32px;gap:16px;background:#f8f4f0;position:sticky;top:0;z-index:10;border-bottom:1px solid #ece4dc}
+.search{flex:1;background:#fff;border:1px solid #ece4dc;border-radius:20px;padding:10px 20px;font-size:13px;outline:none}
+.search:focus{border-color:#a24a3a}
+.sort-bar{display:flex;align-items:center;gap:12px;padding:12px 32px;font-size:13px;color:#6b5b53}
+.sort-bar .opt{padding:4px 12px;border-radius:12px;cursor:pointer;transition:all .2s}
+.sort-bar .opt:hover{background:#ece4dc}
+.sort-bar .opt.active{background:#a24a3a;color:#fff}
+.sort-bar .filter-group{margin-left:auto;display:flex;gap:8px}
+.sort-bar .filter-group span{padding:4px 12px;border-radius:12px;border:1px solid #ece4dc;cursor:pointer;font-size:12px;transition:all .2s}
+.sort-bar .filter-group span:hover{background:#a24a3a;color:#fff;border-color:#a24a3a}
+.sort-bar .filter-group span.active{background:#a24a3a;color:#fff;border-color:#a24a3a}
+
+.gallery{padding:20px 32px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.gallery .card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(59,47,42,.05);transition:all .3s;cursor:pointer;position:relative}
+.gallery .card:hover{transform:translateY(-6px);box-shadow:0 16px 32px rgba(162,74,58,.15),0 0 0 1px rgba(162,74,58,.2)}
+.gallery .card .thumb{aspect-ratio:3/4;background:linear-gradient(135deg,#ece4dc,#d5c8be);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
+.gallery .card .thumb .badge{position:absolute;top:8px;left:8px;background:#a24a3a;color:#fff;font-size:10px;padding:2px 8px;border-radius:8px}
+.gallery .card .body{padding:12px}
+.gallery .card .body .code{font-size:11px;color:#a24a3a;font-weight:700}
+.gallery .card .body .title{font-size:13px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#3b2f2a}
+.gallery .card .body .meta{font-size:11px;color:#8a7a72;margin-top:6px;display:flex;gap:8px}
+.gallery .card .body .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.gallery .card .body .tags span{font-size:10px;padding:2px 8px;border-radius:6px;background:#f0e8e0;color:#6b5b53}
+.gallery .w2{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr}
+.gallery .w2 .thumb{aspect-ratio:unset;height:100%}
+.gallery .h2{grid-row:span 2}
+.gallery .featured .thumb{background:linear-gradient(135deg,#a24a3a,#d98e6a)}
+.gallery .featured .thumb .badge{background:#fff;color:#a24a3a}
+
+.pagination{text-align:center;padding:32px;color:#b5a69c;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="logo">🎞</div>
+  <a href="#" class="active">全部</a><a href="#">AV</a><a href="#">动漫</a><a href="#">欧美</a><a href="#">国产</a>
+  <div class="sep"></div>
+  <a href="#">女优</a><a href="#">收藏</a><a href="#">网站</a><a href="#">标签</a>
+  <div class="sep"></div>
+  <a href="#">添加</a><a href="#">设置</a>
+</div>
+<div class="main">
+  <div class="topbar"><input class="search" placeholder="🔍 搜索影片或女优...">
+    <span style="font-size:13px;color:#8a7a72">1,304 部影片</span>
+  </div>
+  <div class="sort-bar">
+    <span class="opt active">加入日期</span><span class="opt">发行日期</span><span class="opt">女优名</span><span class="opt">播放次数</span><span class="opt">🎲 随机</span>
+    <div class="filter-group">
+      <span class="active">中文字幕</span><span>破解版</span><span>无码</span>
+    </div>
+  </div>
+  <div class="gallery">
+    <div class="card featured"><div class="thumb"><span class="badge">🔥 精选</span>🎬</div><div class="body"><div class="code">CEMD-561</div><div class="title">山手梨愛 心と体を癒す</div><div class="meta">❤️ 4.8 · 2024-07-20</div></div></div>
+    <div class="card"><div class="thumb"><span class="badge">中字</span>🎬</div><div class="body"><div class="code">PAIS-079</div><div class="title">山手梨愛 J-cup 魔女</div><div class="meta">❤️ 4.7 · 2024-12-27</div><div class="tags"><span>中字</span><span>巨乳</span></div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">STAR-123</div><div class="title">三上悠亜 引退作</div><div class="meta">❤️ 4.9 · 2024-03-15</div><div class="tags"><span>单体</span><span>引退</span></div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">SSNI-456</div><div class="title">橋本ありな 初體驗</div><div class="meta">❤️ 4.6 · 2023-11-08</div></div></div>
+    <div class="card"><div class="thumb"><span class="badge">无码</span>🎬</div><div class="body"><div class="code">ABW-789</div><div class="title">葵つかさ 無修正</div><div class="meta">❤️ 4.5 · 2024-01-20</div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">MIDV-111</div><div class="title">石川澪 新人</div><div class="meta">❤️ 4.3 · 2024-06-01</div></div></div>
+    <div class="card h2 featured"><div class="thumb"><span class="badge">🔥 精选</span>🎬</div><div class="body"><div class="code">CAWD-222</div><div class="title">伊藤舞雪</div><div class="meta">❤️ 4.8 · 2024-09-12</div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">JUFE-333</div><div class="title">楪カレン</div><div class="meta">❤️ 4.4 · 2024-05-30</div></div></div>
+    <div class="card"><div class="thumb"><span class="badge">中字</span>🎬</div><div class="body"><div class="code">FSDSS-444</div><div class="title">天使もえ</div><div class="meta">❤️ 4.2 · 2024-02-14</div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">IPX-555</div><div class="title">桃乃木かな</div><div class="meta">❤️ 4.7 · 2023-12-25</div></div></div>
+    <div class="card w2"><div class="thumb">🎬</div><div class="body" style="display:flex;flex-direction:column;justify-content:center"><div class="code">PRED-666</div><div class="title">相沢みなみ 超大作スペシャル</div><div class="meta">❤️ 4.6 · 2024-08-18</div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">MIDE-777</div><div class="title">七沢みあ</div><div class="meta">❤️ 4.5 · 2024-04-22</div></div></div>
+    <div class="card"><div class="thumb">🎬</div><div class="body"><div class="code">STARS-888</div><div class="title">小野夕子</div><div class="meta">❤️ 4.3 · 2024-07-07</div></div></div>
+  </div>
+  <div class="pagination">↓ 下拉加载更多 · 显示 13 / 1,304 部</div>
+</div>
+</div>
+</body>
+</html>
