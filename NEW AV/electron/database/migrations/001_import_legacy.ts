@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import { getSQL } from '../index'
-import { qRun, qOne, qVal } from '../helpers'
+import { qRun, qOne, qVal, q } from '../helpers'
 
 const LEGACY_DB_PATH = 'G:\\aiqiyi\\DataBase\\META-INF\\data.dll'
 const LEGACY_SET_PATH = 'G:\\aiqiyi\\DataBase\\META-INF\\set.dll'
@@ -289,15 +289,15 @@ export async function runLegacyMigration(): Promise<boolean> {
       const row = likesStmt.getAsObject()
 
       if (row.ph) {
-        // ph stores the movie's tjrq timestamp — find the movie by created_at
-        const timestamp = Math.round(parseFloat(String(row.ph)))
-        if (!isNaN(timestamp)) {
-          const movie = qOne(
-            `SELECT id FROM movies WHERE created_at = ?`,
-            [new Date(timestamp).toISOString().replace('T', ' ').replace('Z', '')]
-          )
-          if (movie) {
-            qRun('UPDATE movies SET play_count = play_count + 1 WHERE id = ?', [movie.id])
+        // ph stores the movie's tjrq timestamp — convert to datetime string with ms
+        const ts = parseFloat(String(row.ph))
+        if (!isNaN(ts) && ts > 0) {
+          const d = new Date(ts)
+          const ms = String(d.getMilliseconds()).padStart(3, '0')
+          const dt = d.toISOString().replace('T', ' ').replace('Z', '').split('.')[0] + '.' + ms
+          const movies = q('SELECT id FROM movies WHERE created_at = ?', [dt])
+          for (const movie of movies) {
+            qRun('UPDATE movies SET is_favorite = 1 WHERE id = ?', [movie.id])
             likeCount++
           }
         }
@@ -311,7 +311,7 @@ export async function runLegacyMigration(): Promise<boolean> {
       }
     }
     likesStmt.free()
-    console.log(`[Migration] Updated ${likeCount} likes.`)
+    console.log(`[Migration] Updated ${likeCount} likes (movies + actresses).`)
 
     // ================================================================
     // 6. Migrate settings from set.dll
