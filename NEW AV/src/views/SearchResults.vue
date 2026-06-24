@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import MovieCard from '@/components/MovieCard.vue'
 import ActressCard from '@/components/ActressCard.vue'
@@ -122,6 +122,11 @@ function onMovieFavChanged(id: number, isFav: boolean) {
 
 // Load on mount
 onMounted(() => {
+  doSearch()
+})
+
+// Re-search when query changes
+watch(() => route.query.q, () => {
   doSearch()
 })
 </script>

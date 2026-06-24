@@ -76,7 +76,7 @@
             <span class="copy" @click="copyCode">📋 复制</span>
           </div>
           <div class="category" v-if="!isEditing">
-            <span class="cat-badge">AV</span>
+            <span class="cat-badge">{{ movie.category || 'AV' }}</span>
             <span class="cat-divider">·</span>
             <span class="cat-badge" :class="{ uncensored: movie.is_uncensored }">
               {{ movie.is_uncensored ? '无码' : '有码' }}
@@ -351,7 +351,7 @@ async function toggleEdit() {
     const payload: any = {}
     if (editForm.value.code !== movie.value.code) payload.code = editForm.value.code
     if (editForm.value.title !== movie.value.title) payload.title = editForm.value.title
-    if (editForm.value.actress !== movie.value.actress) payload.actress = editForm.value.actress
+    if (editForm.value.actress !== (movie.value.actress || '')) payload.actresses = editForm.value.actress
     if (editForm.value.release_date !== movie.value.release_date) payload.release_date = editForm.value.release_date
     if (editForm.value.duration !== String(movie.value.duration || '')) payload.duration = editForm.value.duration ? parseInt(editForm.value.duration) : null
     if (editForm.value.series !== movie.value.series) payload.series = editForm.value.series

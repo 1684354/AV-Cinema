@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron'
 import { q, qOne, qVal, qRun } from '../database/helpers'
-import { persistDb } from '../database/index'
 
 export function registerActressIpc(): void {
   ipcMain.handle('getActresses', (_event, params) => {
@@ -39,7 +38,6 @@ export function registerActressIpc(): void {
     const fields = Object.keys(data).map(k => `${k} = ?`).join(', ')
     const values = Object.values(data)
     qRun(`UPDATE actresses SET ${fields}, updated_at = datetime('now','localtime') WHERE id = ?`, [...values, id])
-    persistDb()
     return qOne('SELECT * FROM actresses WHERE id = ?', [id])
   })
 
@@ -56,7 +54,6 @@ export function registerActressIpc(): void {
     if (actress) {
       const newVal = actress.is_favorite ? 0 : 1
       qRun('UPDATE actresses SET is_favorite = ? WHERE id = ?', [newVal, id])
-      persistDb()
       return !!newVal
     }
     return false

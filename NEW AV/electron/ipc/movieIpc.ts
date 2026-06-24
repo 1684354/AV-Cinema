@@ -1,6 +1,5 @@
 import { ipcMain, shell } from 'electron'
 import { q, qOne, qVal, qRun } from '../database/helpers'
-import { persistDb } from '../database/index'
 
 export function registerMovieIpc(): void {
   ipcMain.handle('getMovies', (_event, params) => {
@@ -22,6 +21,7 @@ export function registerMovieIpc(): void {
       if (params.filters.isUncensored) conditions.push('is_uncensored = 1')
       if (params.filters.hasChinese) conditions.push('has_chinese = 1')
     }
+    if (params.isFavorite) conditions.push('is_favorite = 1')
 
     const where = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : ''
     let orderBy = 'ORDER BY created_at DESC'
@@ -55,8 +55,6 @@ export function registerMovieIpc(): void {
       data.has_chinese || 0, data.cover_path || '', data.screenshot_paths || '[]',
       data.video_path || '', data.file_size || 0, data.source || 'manual'
     ])
-    persistDb()
-    // Return the newly created movie
     return qOne('SELECT * FROM movies WHERE id = last_insert_rowid()')
   })
 
@@ -64,13 +62,11 @@ export function registerMovieIpc(): void {
     const fields = Object.keys(data).map(k => `${k} = ?`).join(', ')
     const values = Object.values(data)
     qRun(`UPDATE movies SET ${fields}, updated_at = datetime('now','localtime') WHERE id = ?`, [...values, id])
-    persistDb()
     return qOne('SELECT * FROM movies WHERE id = ?', [id])
   })
 
   ipcMain.handle('deleteMovie', (_event, id: number) => {
     qRun('DELETE FROM movies WHERE id = ?', [id])
-    persistDb()
     return { success: true }
   })
 
@@ -93,7 +89,6 @@ export function registerMovieIpc(): void {
     if (movie) {
       const newVal = movie.is_favorite ? 0 : 1
       qRun('UPDATE movies SET is_favorite = ? WHERE id = ?', [newVal, id])
-      persistDb()
       return !!newVal
     }
     return false

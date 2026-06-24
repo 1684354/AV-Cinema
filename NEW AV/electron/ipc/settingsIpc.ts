@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron'
 import { q, qOne, qVal, qRun } from '../database/helpers'
-import { persistDb } from '../database/index'
 
 export function registerSettingsIpc(): void {
   ipcMain.handle('getSettings', () => {
@@ -12,7 +11,6 @@ export function registerSettingsIpc(): void {
 
   ipcMain.handle('updateSetting', (_event, key: string, value: string) => {
     qRun('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)', [key, value])
-    persistDb()
     return { success: true }
   })
 

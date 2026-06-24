@@ -18,21 +18,27 @@ export const useFavoritesStore = defineStore('favorites', () => {
       if (reset) { moviePage.value = 1; actressPage.value = 1; movies.value = []; actresses.value = [] }
 
       const mResult = await window.api.getMovies({
-        page: moviePage.value, pageSize: 20,
-        filters: {}
+        category: undefined,
+        sort: 'created_at',
+        page: moviePage.value,
+        pageSize: 20,
+        isFavorite: true
       })
       const favMovies = mResult.movies.filter((m: any) => m.is_favorite)
       if (reset) movies.value = favMovies
       else movies.value.push(...favMovies)
       movieTotal.value = mResult.total
+      moviePage.value++
 
-      const aResult = await window.api.getActresses({ page: actressPage.value, pageSize: 20 })
+      const aResult = await window.api.getActresses({
+        sort: 'name',
+        page: actressPage.value,
+        pageSize: 20
+      })
       const favActresses = aResult.actresses.filter((a: any) => a.is_favorite)
       if (reset) actresses.value = favActresses
       else actresses.value.push(...favActresses)
       actressTotal.value = aResult.total
-
-      moviePage.value++
       actressPage.value++
     } catch {}
     finally { loading.value = false }

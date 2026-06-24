@@ -1,6 +1,5 @@
 import { ipcMain, shell } from 'electron'
 import { q, qOne, qRun } from '../database/helpers'
-import { persistDb } from '../database/index'
 
 export function registerWebsiteIpc(): void {
   ipcMain.handle('getWebsites', () => {
@@ -12,7 +11,6 @@ export function registerWebsiteIpc(): void {
     const sort = (maxSort[0]?.s || 0) + 1
     qRun('INSERT INTO websites (category, name, url, description, sort) VALUES (?,?,?,?,?)',
       [data.category || '', data.name, data.url, data.description || '', sort])
-    persistDb()
     return qOne('SELECT * FROM websites WHERE id = last_insert_rowid()')
   })
 
@@ -20,13 +18,11 @@ export function registerWebsiteIpc(): void {
     const fields = Object.keys(data).map(k => `${k} = ?`).join(', ')
     const values = Object.values(data)
     qRun(`UPDATE websites SET ${fields} WHERE id = ?`, [...values, id])
-    persistDb()
     return { success: true }
   })
 
   ipcMain.handle('deleteWebsite', (_event, id: number) => {
     qRun('DELETE FROM websites WHERE id = ?', [id])
-    persistDb()
     return { success: true }
   })
 

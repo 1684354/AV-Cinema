@@ -176,10 +176,10 @@ async function handleCreate() {
       title: form.title.trim(),
     }
     if (form.releaseDate) payload.release_date = form.releaseDate
-    if (form.actress.trim()) payload.actress = form.actress.split(',').map((s: string) => s.trim()).filter(Boolean)
+    if (form.actress.trim()) payload.actresses = form.actress.split(',').map((s: string) => s.trim()).filter(Boolean).join(' ')
     if (form.duration) payload.duration = parseInt(form.duration, 10)
-    if (form.coverUrl.trim()) payload.cover_url = form.coverUrl.trim()
-    if (form.tags.trim()) payload.tags = form.tags.split(',').map((s: string) => s.trim()).filter(Boolean)
+    if (form.coverUrl.trim()) payload.cover_path = form.coverUrl.trim()
+    if (form.tags.trim()) payload.tags = JSON.stringify(form.tags.split(',').map((s: string) => s.trim()).filter(Boolean))
     if (form.description.trim()) payload.description = form.description.trim()
 
     await window.api.createMovie(payload)

@@ -66,6 +66,12 @@ onMounted(() => {
   const cat = (route.params.type as string) || 'all'
   store.setCategory(cat)
   store.loadMovies(true)
+
+  // Attach scroll listener to the parent (view-container)
+  const parent = listRef.value?.parentElement
+  if (parent) {
+    parent.addEventListener('scroll', saveScroll)
+  }
 })
 
 // Watch route param changes for category navigation
